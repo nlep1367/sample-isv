@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+	<wicket:head>
+		<title>ISV Usage Reporting</title>
+	</wicket:head>
+	<wicket:extend>
+		<div>
+			<h1>Report Usage</h1>
+		</div>
+		<form wicket:id="usageForm">
+			<div wicket:id="feedback"></div>
+			<div>Usage Information:</div>
+			<div style="background-color:lightBlue; padding:15px;">
+				<div>
+					<span>Account Identifier: </span>
+					<span wicket:id="accountIdentifier"></span>
+				</div>
+				<div>
+					<span>Pricing Unit: </span>
+					<select wicket:id="usageUnit"></select>
+				</div>
+				<div>
+					<span>Quantity: </span>
+					<input wicket:id="usageQuantity" type="text" />
+				</div>
+				<div>
+					<span>Price: </span>
+					<input wicket:id="usagePrice" type="text" />
+				</div>
+				<div>
+					<span>Description: </span>
+					<input wicket:id="usageDescription" type="text" />
+				</div>
+				<div>
+					<button wicket:id="report">Report Usage</button>
+				</div>
+			</div>
+		</form>
+		<div wicket:id="addons">
+			<form wicket:id="addonUsageForm">
+				<div wicket:id="addonFeedback"></div>
+				<div>Addon Usage Information:</div>
+				<div style="background-color:lightGreen; padding:15px;">
+					<div>
+						<span>Addon Code: </span>
+						<span wicket:id="addonCode"></span>
+					</div>
+					<div>
+						<span>Addon Identifier: </span>
+						<span wicket:id="addonIdentifier"></span>
+					</div>
+					<div>
+						<span>Pricing Unit: </span>
+						<select wicket:id="addonUnit"></select>
+					</div>
+					<div>
+						<span>Quantity: </span>
+						<input wicket:id="addonQuantity" type="text" />
+					</div>
+					<div>
+						<button wicket:id="addonReport">Report Usage</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</wicket:extend>
+</html>

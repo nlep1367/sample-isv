@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	">
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="#{vcapServicesConfig.mySqlUri}" />
+		<property name="username" value="#{vcapServicesConfig.mySqlUsername}" />
+		<property name="password" value="#{vcapServicesConfig.mySqlPassword}" />
+	</bean>
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.appdirect.isv.backend.user.model.Account</value>
+				<value>com.appdirect.isv.backend.user.model.User</value>
+				<value>com.appdirect.isv.backend.user.model.Addon</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="globalRollbackOnParticipationFailure" value="false" />
+	</bean>
+	<tx:annotation-driven />
+	<bean id="accountDao" class="com.appdirect.isv.backend.core.dao.GenericHibernateDAOImpl">
+		<constructor-arg>
+			<value>com.appdirect.isv.backend.user.model.Account</value>
+		</constructor-arg>
+	</bean>
+	<bean id="userDao" class="com.appdirect.isv.backend.core.dao.GenericHibernateDAOImpl">
+		<constructor-arg>
+			<value>com.appdirect.isv.backend.user.model.User</value>
+		</constructor-arg>
+	</bean>
+	<bean id="addonDao" class="com.appdirect.isv.backend.core.dao.GenericHibernateDAOImpl">
+		<constructor-arg>
+			<value>com.appdirect.isv.backend.user.model.Addon</value>
+		</constructor-arg>
+	</bean>
+</beans>

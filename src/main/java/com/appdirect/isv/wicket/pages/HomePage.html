@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+	<wicket:head>
+		<title>ISV Home</title>
+	</wicket:head>
+	<wicket:extend>
+		<div class="jumbotron">
+			<h1>Welcome to the Sample ISV!</h1>
+			<dl>
+				<dt>OAuth Consumer Key:</dt><dd><span wicket:id="oauthConsumerKey"></span></dd>
+				<dt>OAuth Consumer Secret:</dt><dd><span wicket:id="oauthConsumerSecret"></span></dd>
+			</dl>
+		</div>
+		<div class="alert alert-info fade in">
+			<button type="button" class="close" data-dismiss="alert">×</button>
+			<strong>Heads up!</strong> On this page you can see the list of all accounts in the DB.
+		</div>
+		<div>
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>UUID</th>
+						<th>Name</th>
+						<th>Edition Code</th>
+						<th>Max Users</th>
+						<th>AppDirect Managed</th>
+						<th>AppDirect Base URL</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr wicket:id="row">
+						<td><a wicket:id="idLink"><span wicket:id="id"></span></a></td>
+						<td><a wicket:id="uuidLink"><span wicket:id="uuid"></span></a></td>
+						<td><a wicket:id="nameLink"><span wicket:id="name"></span></a></td>
+						<td><span wicket:id="editionCode"></span></td>
+						<td><span wicket:id="maxUsers"></span></td>
+						<td><span wicket:id="appDirectManaged"></span></td>
+						<td><span wicket:id="appDirectBaseUrl"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</wicket:extend>
+</html>
