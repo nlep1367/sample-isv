@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+	<wicket:head>
+		<title>ISV Account Cancellation</title>
+	</wicket:head>
+	<wicket:extend>
+		<div>
+			<h1>Cancel Account</h1>
+		</div>
+		<div>Account Information:</div>
+		<div style="background-color: lightBlue;">
+			<div>
+				<span>Your OpenID: </span>
+				<span wicket:id="openId"></span>
+			</div>
+			<div>
+				<span>User Name: </span>
+				<span wicket:id="firstName"></span>&nbsp;<span wicket:id="lastName"></span>
+			</div>
+			<div>
+				<span>Account Identifier: </span>
+				<span wicket:id="accountIdentifier"></span>
+			</div>
+			<div>
+				<span>Return URL: </span>
+				<span wicket:id="returnUrl"></span>
+			</div>
+			<div>
+				<button wicket:id="cancelAccount">Delete</button>
+			</div>
+		</div>
+	</wicket:extend>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html xmlns:wicket="http://wicket.apache.org/dtds.data/wicket-xhtml1.4-strict.dtd">
+	<wicket:head>
+		<title>ISV Account Creation</title>
+	</wicket:head>
+	<wicket:extend>
+		<div>
+			<h1>Create New Account</h1>
+		</div>
+		<div>Account Information:</div>
+		<div style="background-color: lightBlue;">
+			<table>
+				<tbody>
+					<tr>
+						<td><span>Your UUID: </span></td>
+						<td><span wicket:id="uuid"></span></td>
+					</tr>
+					<tr>
+						<td><span>Your OpenID: </span></td>
+						<td><span wicket:id="openId"></span></td>
+					</tr>
+					<tr>
+						<td><span>Your Email: </span></td>
+						<td><span wicket:id="email"></span></td>
+					</tr>
+					<tr>
+						<td><span>Full Name: </span></td>
+						<td><span wicket:id="firstName"></span>&nbsp;<span wicket:id="lastName"></span></td>
+					</tr>
+					<tr>
+						<td><span>Company Name: </span></td>
+						<td><span wicket:id="companyName"></span></td>
+					</tr>
+					<tr>
+						<td><span>Company Email: </span></td>
+						<td><span wicket:id="companyEmail"></span></td>
+					</tr>
+					<tr>
+						<td><span>Company Phone: </span></td>
+						<td><span wicket:id="companyPhone"></span></td>
+					</tr>
+					<tr>
+						<td><span>Company Website: </span></td>
+						<td><span wicket:id="companyWebsite"></span></td>
+					</tr>
+					<tr>
+						<td><span>Edition Code: </span></td>
+						<td><span wicket:id="editionCode"></span></td>
+					</tr>
+					<tr>
+						<td><span>Number of Seats: </span></td>
+						<td><span wicket:id="numOfSeats"></span></td>
+					</tr>
+					<tr>
+						<td><span>Return URL: </span></td>
+						<td><span wicket:id="returnUrl"></span></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<button wicket:id="createAccount">Create</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</wicket:extend>
+</html>
