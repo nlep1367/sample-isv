@@ -32,7 +32,7 @@ public class LoginPage extends BaseWebPage {
 		super(parameters);
 		String openidIdentifier = parameters.get(OPENID_IDENTIFIER).toString();
 		if (StringUtils.isNotBlank(openidIdentifier)) {
-			startOpenIdLogin(openidIdentifier);
+			startOpenIdLogin(openidIdentifier, parameters);
 		}
 		add(new FeedbackPanel("feedback"));
 		Form<Void> openidForm = new Form<Void>("openidForm");
@@ -54,13 +54,17 @@ public class LoginPage extends BaseWebPage {
 		add(openidForm);
 	}
 
-	private void startOpenIdLogin(String openidIdentifier) {
+	private void startOpenIdLogin(String openidIdentifier, PageParameters pageParameters) {
 		OpenIDConsumer consumer = ISVApplication.get().getOpenIdConsumer();
 		HttpServletRequest request = (HttpServletRequest) getRequest().getContainerRequest();
 		String baseUrl = getBaseURL();
 		String returnUrl = String.format("%s/%s", baseUrl, OpenIDReturnPage.MOUNT_PATH);
 		try {
 			String redirectUrl = consumer.beginConsumption(request, openidIdentifier, returnUrl, baseUrl);
+			String queryParams = getQueryParameters(pageParameters);
+			if (!StringUtils.isBlank(queryParams)) {
+				redirectUrl = redirectUrl.concat("&" + queryParams);
+			}
 			throw new RedirectToUrlException(redirectUrl);
 		} catch (OpenIDConsumerException e) {
 			log.error("OpenID exception: {}", e.getMessage(), e);
@@ -71,5 +75,10 @@ public class LoginPage extends BaseWebPage {
 	private String getBaseURL() {
 		String requestedUrl = ((HttpServletRequest) getRequest().getContainerRequest()).getRequestURL().toString();
 		return requestedUrl.substring(0, requestedUrl.indexOf("/login"));
+	}
+
+	private String getQueryParameters(PageParameters pageParameters) {
+		String queryString = pageParameters.get("openid_identifier").toString();
+		return queryString.substring(queryString.indexOf("?") + 1);
 	}
 }
