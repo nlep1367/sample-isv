@@ -11,6 +11,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.request.Url;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.springframework.security.openid.OpenIDConsumer;
@@ -79,6 +80,6 @@ public class LoginPage extends BaseWebPage {
 
 	private String getQueryParameters(PageParameters pageParameters) {
 		String queryString = pageParameters.get("openid_identifier").toString();
-		return queryString.substring(queryString.indexOf("?") + 1);
+		return Url.parse(queryString).getQueryString();
 	}
 }
