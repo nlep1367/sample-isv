@@ -31,7 +31,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		if (result == null || result.size() != 1) {
 			throw new ObjectNotFoundException(username, User.class.toString());
 		} else {
-			return new UserBean(result.get(0));
+			User user = result.get(0);
+			UserBean userBean = new UserBean(user);
+			return new UserDetailsImpl(userBean);
 		}
 	}
 }

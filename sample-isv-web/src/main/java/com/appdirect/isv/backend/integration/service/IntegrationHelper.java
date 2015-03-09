@@ -219,7 +219,7 @@ public class IntegrationHelper {
 			try {
 				// Create the new user.
 				isvService.createUser(userBean, accountBean);
-				result.setMessage("Successfully created user: " + userBean.getUsername());
+				result.setMessage("Successfully created user: " + userBean.getUuid());
 			} catch (ObjectNotFoundException onfe) {
 				// The account could not be found. Fail.
 				result.setSuccess(false);

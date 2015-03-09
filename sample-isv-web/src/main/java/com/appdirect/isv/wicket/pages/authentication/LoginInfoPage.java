@@ -38,7 +38,7 @@ public class LoginInfoPage extends BaseWebPage {
 			UserBean currentUser = ISVSession.get().getCurrentUser();
 			WebMarkupContainer row = new WebMarkupContainer("row");
 			row.add(new Label("key", new Model<String>("username")));
-			row.add(new Label("value", new Model<String>(currentUser == null ? "N/A" : currentUser.getUsername())));
+			row.add(new Label("value", new Model<String>(currentUser == null ? "N/A" : currentUser.getUuid())));
 			add(row);
 		}
 	}

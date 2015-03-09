@@ -141,8 +141,6 @@ public class ISVServiceImpl implements ISVService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void update(UserBean userBean) {
 		User user = userDao.findById(userBean.getId());
-		user.setUsername(userBean.getUsername());
-		user.setPassword(userBean.getPassword());
 		user.setEmail(userBean.getEmail());
 		user.setFirstName(userBean.getFirstName());
 		user.setLastName(userBean.getLastName());

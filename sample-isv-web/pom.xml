@@ -43,7 +43,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sample-isv-model</artifactId>
+			<artifactId>sample-isv-dto</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

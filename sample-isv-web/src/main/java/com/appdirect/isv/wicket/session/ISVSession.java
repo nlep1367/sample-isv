@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.appdirect.isv.backend.security.service.UserDetailsImpl;
 import com.appdirect.isv.backend.user.vo.UserBean;
 import com.appdirect.isv.wicket.application.ISVApplication;
 
@@ -66,7 +67,7 @@ public class ISVSession extends AuthenticatedWebSession {
 
 	public UserBean getCurrentUser() {
 		if (isSignedIn()) {
-			return (UserBean) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return ((UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserBean();
 		} else {
 			return null;
 		}

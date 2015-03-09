@@ -25,6 +25,7 @@
 
 	<modules>
 		<module>sample-isv-model</module>
+		<module>sample-isv-dto</module>
 		<module>sample-isv-web</module>
 	</modules>
 

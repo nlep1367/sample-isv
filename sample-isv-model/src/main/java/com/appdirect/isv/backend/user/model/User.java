@@ -27,12 +27,6 @@ public class User {
 	@Column(name = "uuid", unique = true)
 	private String uuid;
 
-	@Column(name = "username", unique = true)
-	private String username;
-
-	@Column(name = "password")
-	private String password;
-
 	@Column(name = "open_id", unique = true)
 	private String openId;
 
