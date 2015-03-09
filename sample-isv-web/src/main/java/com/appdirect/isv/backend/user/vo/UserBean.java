@@ -48,6 +48,22 @@ public class UserBean implements UserDetails {
 		this.admin = user.isAdmin();
 	}
 
+	public User toUser() {
+		User user = new User();
+		user.setUuid(getUuid());
+		user.setUsername(getUsername());
+		user.setPassword(getPassword());
+		user.setOpenId(getOpenId());
+		user.setEmail(getEmail());
+		user.setFirstName(getFirstName());
+		user.setLastName(getLastName());
+		user.setZipCode(getZipCode());
+		user.setDepartment(getDepartment());
+		user.setTimezone(getTimezone());
+		user.setAdmin(isAdmin());
+		return user;
+	}
+
 	@Override
 	public String getUsername() {
 		return uuid;

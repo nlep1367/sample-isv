@@ -1,7 +1,5 @@
 package com.appdirect.isv.backend.user.model;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,16 +9,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import com.appdirect.isv.backend.user.vo.AddonBean;
-
-@Data
+@Getter @Setter @NoArgsConstructor
 @Entity
 @Table(name = "isv_addons")
-public class Addon implements Serializable {
-	private static final long serialVersionUID = 560036415271867806L;
-
+public class Addon {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
@@ -38,19 +34,4 @@ public class Addon implements Serializable {
 
 	@Column(name = "quantity")
 	private Integer quantity;
-
-	public Addon() {
-		super();
-	}
-
-	public Addon(AddonBean addonBean) {
-		super();
-		populate(addonBean);
-	}
-
-	public void populate(AddonBean addonBean) {
-		setAddonIdentifier(addonBean.getAddonIdentifier());
-		setCode(addonBean.getCode());
-		setQuantity(addonBean.getQuantity());
-	}
 }

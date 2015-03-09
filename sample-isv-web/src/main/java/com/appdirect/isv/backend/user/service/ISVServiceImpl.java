@@ -32,9 +32,9 @@ public class ISVServiceImpl implements ISVService {
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Long createAccount(AccountBean accountBean, UserBean adminBean) {
-		User admin = new User(adminBean);
+		User admin = adminBean.toUser();
 		admin.setAdmin(true);
-		Account account = new Account(accountBean);
+		Account account = accountBean.toAccount();
 		admin.setAccount(account);
 		account.getUsers().add(admin);
 		accountDao.saveOrUpdate(account);
@@ -45,7 +45,7 @@ public class ISVServiceImpl implements ISVService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void createUser(UserBean userBean, AccountBean accountBean) {
 		Account account = readAccount(accountBean);
-		User user = new User(userBean);
+		User user = userBean.toUser();
 		user.setAccount(account);
 		account.getUsers().add(user);
 	}
@@ -141,14 +141,24 @@ public class ISVServiceImpl implements ISVService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void update(UserBean userBean) {
 		User user = userDao.findById(userBean.getId());
-		user.populate(userBean);
+		user.setUsername(userBean.getUsername());
+		user.setPassword(userBean.getPassword());
+		user.setEmail(userBean.getEmail());
+		user.setFirstName(userBean.getFirstName());
+		user.setLastName(userBean.getLastName());
+		user.setZipCode(userBean.getZipCode());
+		user.setDepartment(userBean.getDepartment());
+		user.setTimezone(userBean.getTimezone());
+		user.setAdmin(userBean.isAdmin());
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void update(AccountBean accountBean) {
 		Account account = readAccount(accountBean);
-		account.populate(accountBean);
+		account.setName(accountBean.getName());
+		account.setEditionCode(accountBean.getEditionCode());
+		account.setMaxUsers(accountBean.getMaxUsers());
 	}
 
 	@Override
@@ -171,7 +181,7 @@ public class ISVServiceImpl implements ISVService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void createAddon(AddonBean addonBean, AccountBean accountBean) {
 		Account account = readAccount(accountBean);
-		Addon addon = new Addon(addonBean);
+		Addon addon = addonBean.toAddon();
 		addon.setAccount(account);
 		account.getAddons().add(addon);
 	}
@@ -190,7 +200,8 @@ public class ISVServiceImpl implements ISVService {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void updateAddon(AddonBean addonBean) {
 		Addon addon = readAddon(addonBean);
-		addon.populate(addonBean);
+		addon.setCode(addonBean.getCode());
+		addon.setQuantity(addonBean.getQuantity());
 	}
 
 	@Override

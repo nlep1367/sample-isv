@@ -25,4 +25,12 @@ public class AddonBean implements Serializable {
 		setCode(addon.getCode());
 		setQuantity(addon.getQuantity());
 	}
+	
+	public Addon toAddon() {
+		Addon addon = new Addon();
+		addon.setAddonIdentifier(getAddonIdentifier());
+		addon.setCode(getCode());
+		addon.setQuantity(getQuantity());
+		return addon;
+	}
 }

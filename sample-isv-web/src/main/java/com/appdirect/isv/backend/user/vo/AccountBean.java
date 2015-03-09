@@ -48,6 +48,16 @@ public class AccountBean implements Serializable {
 		this.appDirectBaseUrl = account.getAppDirectBaseUrl();
 	}
 
+	public Account toAccount() {
+		Account account = new Account();
+		account.setUuid(getUuid());
+		account.setName(getName());
+		account.setEditionCode(getEditionCode());
+		account.setMaxUsers(getMaxUsers());
+		account.setAppDirectBaseUrl(getAppDirectBaseUrl());
+		return account;
+	}
+
 	@XmlTransient
 	public Long getId() {
 		return id;
