@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,7 +45,7 @@ public class GenericHibernateDAOImpl<T, PK extends Serializable> implements Gene
 	@Transactional(propagation = Propagation.MANDATORY)
 	public List<T> findAll() {
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(type);
-		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		criteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 		@SuppressWarnings("unchecked")
 		List<T> result = criteria.list();
 		return result;
