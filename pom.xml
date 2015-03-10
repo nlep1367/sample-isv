@@ -41,9 +41,6 @@
 	</repositories>
 
 	<properties>
-		<pom.appdirect.base.url>http://localhost:8080/AppDirect</pom.appdirect.base.url>
-		<pom.oauth.consumer.key>key</pom.oauth.consumer.key>
-		<pom.oauth.consumer.secret>secret</pom.oauth.consumer.secret>
 		<!-- Spring Platform overrides. -->
 		<java.version>1.8</java.version>
 		<!-- Dependency versions. -->
@@ -99,23 +96,8 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>com.fasterxml.jackson.jaxrs</groupId>
-				<artifactId>jackson-jaxrs-json-provider</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-rs-client</artifactId>
-				<version>${cxf.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-rt-transports-http</artifactId>
-				<version>${cxf.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.cxf</groupId>
-				<artifactId>cxf-rt-frontend-jaxrs</artifactId>
 				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
@@ -142,6 +124,14 @@
 	</dependencyManagement>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

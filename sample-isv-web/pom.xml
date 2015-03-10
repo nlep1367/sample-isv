@@ -8,39 +8,13 @@
 	</parent>
 
 	<artifactId>sample-isv-web</artifactId>
-	<packaging>war</packaging>
-
-	<properties>
-		<pom.appdirect.base.url>http://localhost:8080/AppDirect</pom.appdirect.base.url>
-		<pom.oauth.consumer.key>key</pom.oauth.consumer.key>
-		<pom.oauth.consumer.secret>secret</pom.oauth.consumer.secret>
-		<!-- Spring Platform overrides. -->
-		<java.version>1.8</java.version>
-		<!-- Dependency versions. -->
-		<wicket.version>6.19.0</wicket.version>
-		<cxf.version>3.0.4</cxf.version>
-	</properties>
-
-	<profiles>
-		<profile>
-			<id>test-isv-1</id>
-			<properties>
-				<pom.appdirect.base.url>https://test.appdirect.com</pom.appdirect.base.url>
-				<pom.oauth.consumer.key>demo-app-1</pom.oauth.consumer.key>
-				<pom.oauth.consumer.secret>fGWi8NZzjy0mbJLM</pom.oauth.consumer.secret>
-			</properties>
-		</profile>
-		<profile>
-			<id>test-isv-2</id>
-			<properties>
-				<pom.appdirect.base.url>https://test.appdirect.com</pom.appdirect.base.url>
-				<pom.oauth.consumer.key>sample-application2-1085</pom.oauth.consumer.key>
-				<pom.oauth.consumer.secret>1etcu0X6I1178qER</pom.oauth.consumer.secret>
-			</properties>
-		</profile>
-	</profiles>
 
 	<dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>sample-isv-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sample-isv-dto</artifactId>
@@ -57,6 +31,31 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- Spring Boot Starters. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+			<!-- Remove version once Spring Platform is updated with Spring Boot 1.2.2. -->
+			<version>1.2.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<!-- Wicket Dependencies. -->
 		<dependency>
 			<groupId>org.wicketstuff</groupId>
 			<artifactId>wicketstuff-annotation</artifactId>
@@ -78,84 +77,22 @@
 			<artifactId>wicket</artifactId>
 			<type>pom</type>
 		</dependency>
+
 		<dependency>
-			<groupId>oauth.signpost</groupId>
-			<artifactId>signpost-core</artifactId>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-openid</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.openid4java</groupId>
-			<artifactId>openid4java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.jaxrs</groupId>
-			<artifactId>jackson-jaxrs-json-provider</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-rs-client</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http</artifactId>
+			<groupId>oauth.signpost</groupId>
+			<artifactId>signpost-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjweaver</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-openid</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>openid4java-nodeps</artifactId>
-					<groupId>org.openid4java</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-		</dependency>
+
+		<!-- Logging Dependencies. -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>log4j-over-slf4j</artifactId>
@@ -167,6 +104,12 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
+		</dependency>
+
+		<!-- Provided Dependencies. -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -214,13 +157,8 @@
 		</testResources>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<port>9080</port>
-					<path>/</path>
-				</configuration>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

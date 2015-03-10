@@ -1,0 +1,16 @@
+spring:
+    datasource:
+        url: jdbc:mysql://us-cdbr-east-05.cleardb.net:3306/ad_3fd6a735c149159
+        username: b4c9356d57d688
+        password: 95566d10
+        driver-class-name: com.mysql.jdbc.Driver
+    jpa:
+        generate-ddl: true
+
+appdirect:
+    base:
+        url: https://test.appdirect.com
+    oauth:
+        consumer:
+            key: demo-app-1
+            secret: fGWi8NZzjy0mbJLM

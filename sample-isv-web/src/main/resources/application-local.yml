@@ -1,0 +1,19 @@
+server:
+    port: 9080
+
+spring:
+    datasource:
+        url: jdbc:mysql://localhost/isv
+        username: root
+        password: password
+        driver-class-name: com.mysql.jdbc.Driver
+    jpa:
+        generate-ddl: true
+
+appdirect:
+    base:
+        url: http://local.appdirect.com
+    oauth:
+        consumer:
+            key: key
+            secret: secret

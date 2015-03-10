@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html xmlns:wicket="http://wicket.apache.org">
+	<wicket:head>
+		<title>Account</title>
+	</wicket:head>
+	<wicket:extend>
+		<div class="page-header">
+			<h1>Account Info</h1>
+		</div>
+		<div>
+			<table>
+				<tr>
+					<td style="font-weight: bold;">ID:</td>
+					<td wicket:id="id"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">UUID:</td>
+					<td wicket:id="uuid"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">Edition Code:</td>
+					<td wicket:id="editionCode"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">Max Users:</td>
+					<td wicket:id="maxUsers"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">AppDirect Base URL:</td>
+					<td wicket:id="appDirectBaseUrl"></td>
+				</tr>
+			</table>
+		</div>
+		<div>
+			<button wicket:id="deleteAccountLink" class="btn btn-default">Delete Account</button>
+		</div>
+		<div>
+			<h3>Add-ons</h3>
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Identifier</th>
+						<th>Code</th>
+						<th>Quantity</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr wicket:id="addonrow">
+						<td><span wicket:id="id"></span></td>
+						<td><span wicket:id="identifier"></span></td>
+						<td><span wicket:id="code"></span></td>
+						<td><span wicket:id="quantity"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<h3>Users</h3>
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>UUID</th>
+						<th>OpenID</th>
+						<th>Email</th>
+						<th>Full Name</th>
+						<th>Zip Code</th>
+						<th>Department</th>
+						<th>Admin</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr wicket:id="row">
+						<td><span wicket:id="id"></span></td>
+						<td><span wicket:id="uuid"></span></td>
+						<td><span wicket:id="openId"></span></td>
+						<td><span wicket:id="email"></span></td>
+						<td>
+							<span wicket:id="firstName"></span><br/>
+							<span wicket:id="lastName"></span>
+						</td>
+						<td><span wicket:id="zipCode"></span></td>
+						<td><span wicket:id="department"></span></td>
+						<td><span wicket:id="isAdmin"></span></td>
+						<td><button wicket:id="deleteLink" class="btn btn-default">Delete</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</wicket:extend>
+</html>

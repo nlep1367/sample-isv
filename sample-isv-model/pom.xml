@@ -8,7 +8,6 @@
 	</parent>
 
 	<artifactId>sample-isv-model</artifactId>
-	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>

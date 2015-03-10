@@ -8,7 +8,6 @@
 	</parent>
 
 	<artifactId>sample-isv-dto</artifactId>
-	<packaging>jar</packaging>
 
 	<dependencies>
 		<dependency>
