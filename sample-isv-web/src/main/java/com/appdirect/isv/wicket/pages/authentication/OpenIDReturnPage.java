@@ -39,7 +39,7 @@ public class OpenIDReturnPage extends WebPage {
 					if (ISVSession.get().authenticate(token)) {
 						getSession().info("Welcome back!");
 						continueToOriginalDestination();
-						throw new RedirectToPageException(ISVApplication.get().getHomePage());
+						throw new RedirectToPageException(getApplication().getHomePage());
 					}
 				} catch (UsernameNotFoundException e) {
 					getSession().error(String.format("There is no user with OpenID %s", token.getIdentityUrl()));

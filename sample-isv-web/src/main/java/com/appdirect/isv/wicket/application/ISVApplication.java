@@ -1,11 +1,14 @@
 package com.appdirect.isv.wicket.application;
 
+import lombok.Getter;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.Page;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.settings.IRequestCycleSettings.RenderStrategy;
+import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.openid.OpenIDConsumer;
@@ -28,6 +31,8 @@ public class ISVApplication extends AuthenticatedWebApplication {
 	@Override
 	protected void init() {
 		super.init();
+		// Allow wicket to inject spring beans into components using @SpringBean annotation
+		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		new AnnotatedMountScanner().scanPackage("com.appdirect.isv").mount(this);
 		getRequestCycleSettings().setRenderStrategy(RenderStrategy.ONE_PASS_RENDER);
 	}
@@ -54,64 +59,27 @@ public class ISVApplication extends AuthenticatedWebApplication {
 	/*
 	 * Spring Beans
 	 */
-	protected OpenIDConsumer openIdConsumer;
-	protected AuthenticationManager authenticationManager;
-	protected ISVService isvService;
-	protected IntegrationService integrationService;
-	protected ServerConfiguration serverConfiguration;
-	protected OAuthUrlSigner oauthUrlSigner;
-
-	public OpenIDConsumer getOpenIdConsumer() {
-		return openIdConsumer;
-	}
-
+	@Getter
 	@Autowired
-	public void setOpenIdConsumer(OpenIDConsumer openIdConsumer) {
-		this.openIdConsumer = openIdConsumer;
-	}
+	private OpenIDConsumer openIdConsumer;
 
-	public AuthenticationManager getAuthenticationManager() {
-		return authenticationManager;
-	}
-
+	@Getter
 	@Autowired
-	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
+	private AuthenticationManager authenticationManager;
 
-	public ISVService getIsvService() {
-		return isvService;
-	}
-
+	@Getter
 	@Autowired
-	public void setIsvService(ISVService isvService) {
-		this.isvService = isvService;
-	}
+	private ISVService isvService;
 
-	public IntegrationService getIntegrationService() {
-		return integrationService;
-	}
-
+	@Getter
 	@Autowired
-	public void setIntegrationService(IntegrationService integrationService) {
-		this.integrationService = integrationService;
-	}
+	private IntegrationService integrationService;
 
-	public ServerConfiguration getServerConfiguration() {
-		return serverConfiguration;
-	}
-
+	@Getter
 	@Autowired
-	public void setServerConfiguration(ServerConfiguration serverConfiguration) {
-		this.serverConfiguration = serverConfiguration;
-	}
+	private ServerConfiguration serverConfiguration;
 
-	public OAuthUrlSigner getOauthUrlSigner() {
-		return oauthUrlSigner;
-	}
-
+	@Getter
 	@Autowired
-	public void setOauthUrlSigner(OAuthUrlSigner oauthUrlSigner) {
-		this.oauthUrlSigner = oauthUrlSigner;
-	}
+	private OAuthUrlSigner oauthUrlSigner;
 }

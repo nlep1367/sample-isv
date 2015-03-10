@@ -3,8 +3,11 @@ package com.appdirect.isv.wicket.session;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.injection.Injector;
 import org.apache.wicket.request.Request;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.hibernate.ObjectNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.appdirect.isv.backend.security.service.UserDetailsImpl;
 import com.appdirect.isv.backend.user.vo.UserBean;
-import com.appdirect.isv.wicket.application.ISVApplication;
 
 /**
  * Our custom web session implementation.
@@ -20,8 +22,12 @@ import com.appdirect.isv.wicket.application.ISVApplication;
 public class ISVSession extends AuthenticatedWebSession {
 	private static final long serialVersionUID = -3035882552790674791L;
 
+	@SpringBean(name = "authenticationManager")
+	private AuthenticationManager authenticationManager;
+
 	public ISVSession(Request request) {
 		super(request);
+		Injector.get().inject(this);
 	}
 
 	@Override
@@ -32,7 +38,7 @@ public class ISVSession extends AuthenticatedWebSession {
 	public boolean authenticate(Authentication token) {
 		boolean authenticated = false;
 		try {
-			Authentication authentication = ISVApplication.get().getAuthenticationManager().authenticate(token);
+			Authentication authentication = authenticationManager.authenticate(token);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			authenticated = authentication.isAuthenticated();
 		} catch (AuthenticationException e) {

@@ -38,7 +38,7 @@ public abstract class BaseWebPage extends WebPage {
 			// Account or user was deleted.
 			currentAccount = null;
 		}
-		add(new BookmarkablePageLink<Void>("home", ISVApplication.get().getHomePage()));
+		add(new BookmarkablePageLink<Void>("home", getApplication().getHomePage()));
 		PageParameters accountPageParameters = new PageParameters();
 		if (currentAccount != null) {
 			accountPageParameters.set(AccountPage.ACCOUNT_ID_PARAM, currentAccount.getId());

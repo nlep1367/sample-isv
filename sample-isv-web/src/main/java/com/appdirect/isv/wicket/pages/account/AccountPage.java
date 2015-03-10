@@ -45,7 +45,7 @@ public class AccountPage extends BaseWebPage {
 			@Override
 			public void onClick(AjaxRequestTarget target) {
 				ISVApplication.get().getIsvService().delete(accountBean);
-				setResponsePage(ISVApplication.get().getHomePage());
+				setResponsePage(getApplication().getHomePage());
 			}
 		});
 		final DataView<AddonBean> addonDataView = new DataView<AddonBean>("addonrow", new ListDataProvider<AddonBean>(accountBean.getAddons())) {
