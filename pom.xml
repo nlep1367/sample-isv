@@ -26,6 +26,8 @@
 	<modules>
 		<module>sample-isv-model</module>
 		<module>sample-isv-dto</module>
+		<module>sample-isv-service</module>
+		<module>sample-isv-service-impl</module>
 		<module>sample-isv-web</module>
 	</modules>
 
@@ -139,6 +141,14 @@
 		</dependencies>
 	</dependencyManagement>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	
 	<build>
 		<plugins>
 			<plugin>
