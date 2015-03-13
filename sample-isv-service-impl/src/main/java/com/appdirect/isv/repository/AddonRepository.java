@@ -1,9 +1,9 @@
 package com.appdirect.isv.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.appdirect.isv.model.Addon;
 
-public interface AddonRepository extends CrudRepository<Addon, Long> {
+public interface AddonRepository extends PagingAndSortingRepository<Addon, Long> {
 	Addon findByAddonIdentifier(String addonIdentifier);
 }

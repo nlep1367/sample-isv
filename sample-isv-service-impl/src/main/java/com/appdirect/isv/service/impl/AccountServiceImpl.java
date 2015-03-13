@@ -1,6 +1,5 @@
 package com.appdirect.isv.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,12 +66,11 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<UserBean> readUsers() {
-		List<UserBean> userBeans = new ArrayList<UserBean>();
-		Iterable<User> users = userRepository.findAll();
-		for (User user : users) {
-			userBeans.add(new UserBean(user));
-		}
-		return userBeans;
+		Pageable pageable = new PageRequest(0, 25, Direction.DESC, "id");
+		Page<User> page = userRepository.findAll(pageable);
+		return page.getContent().stream()
+				.map(user -> new UserBean(user))
+				.collect(Collectors.toList());
 	}
 
 	@Override
