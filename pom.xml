@@ -101,6 +101,11 @@
 				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>xml-apis</groupId>
+				<artifactId>xml-apis</artifactId>
+				<version>1.4.01</version>
+			</dependency>
+			<dependency>
 				<groupId>org.openid4java</groupId>
 				<artifactId>openid4java</artifactId>
 				<version>0.9.8</version>
