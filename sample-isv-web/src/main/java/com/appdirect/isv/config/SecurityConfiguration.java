@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.openid.AxFetchListFactory;
 import org.springframework.security.openid.OpenID4JavaConsumer;
@@ -16,7 +15,6 @@ import com.appdirect.isv.security.OpenIDUserDetailsServiceImpl;
 import com.google.common.collect.Lists;
 
 @Configuration
-@EnableWebMvcSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Bean
 	public AuthenticationUserDetailsService<OpenIDAuthenticationToken> openIdUserDetailsService() {

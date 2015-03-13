@@ -2,8 +2,8 @@ package com.appdirect.isv.web.wicket.application;
 
 import org.apache.wicket.Application;
 import org.apache.wicket.Page;
+import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
-import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.settings.IRequestCycleSettings.RenderStrategy;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
@@ -43,7 +43,7 @@ public class WicketApplication extends AuthenticatedWebApplication {
 	}
 
 	@Override
-	protected Class<? extends AuthenticatedWebSession> getWebSessionClass() {
+	protected Class<? extends AbstractAuthenticatedWebSession> getWebSessionClass() {
 		return WicketSession.class;
 	}
 }
