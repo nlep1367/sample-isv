@@ -38,8 +38,14 @@ public class Account {
 	private Integer maxUsers = null;
 
 	@OneToMany(mappedBy = "account", orphanRemoval = true, cascade = { CascadeType.ALL })
-	private List<User> users = new ArrayList<User>();
+	private List<User> users = new ArrayList<>();
 
 	@OneToMany(mappedBy = "account", orphanRemoval = true, cascade = { CascadeType.ALL })
-	private List<Addon> addons = new ArrayList<Addon>();
+	private List<Addon> addons = new ArrayList<>();
+
+	@Column(name = "saml_idp_entity_id", unique = true, length = 255)
+	private String samlIdpEntityId;
+
+	@Column(name = "saml_idp_metadata_url", length = 255)
+	private String samlIdpMetadataUrl;
 }

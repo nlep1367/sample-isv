@@ -24,7 +24,7 @@ public class UsersPage extends BaseWebPage {
 	public UsersPage(PageParameters parameters) {
 		super(parameters);
 		List<UserBean> userBeans = accountService.readUsers();
-		add(new DataView<UserBean>("row", new ListDataProvider<UserBean>(userBeans)) {
+		add(new DataView<UserBean>("row", new ListDataProvider<>(userBeans)) {
 			private static final long serialVersionUID = -1432601596719602292L;
 
 			@Override

@@ -27,8 +27,7 @@ public class UpgradeAccountPage extends BaseIntegrationPage {
 	public UpgradeAccountPage(PageParameters parameters) {
 		super(parameters);
 
-		final EventInfo eventInfo = readEvent(parameters);
-
+		EventInfo eventInfo = readEvent(parameters);
 		if (eventInfo == null || eventInfo.getType() != EventType.SUBSCRIPTION_CHANGE) {
 			throw new IllegalStateException("Invalid event object.");
 		}

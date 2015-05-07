@@ -1,5 +1,7 @@
 package com.appdirect.isv.integration.service;
 
+import java.net.URI;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -10,17 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import com.appdirect.isv.dto.AccountBean;
 import com.appdirect.isv.dto.AddonBean;
 import com.appdirect.isv.dto.UserBean;
 import com.appdirect.isv.integration.oauth.OAuthPhaseInterceptor;
+import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
 import com.appdirect.isv.integration.remote.service.AppDirectIntegrationAPI;
 import com.appdirect.isv.integration.remote.type.ErrorCode;
 import com.appdirect.isv.integration.remote.type.EventType;
 import com.appdirect.isv.integration.remote.vo.APIResult;
 import com.appdirect.isv.integration.remote.vo.EventInfo;
 import com.appdirect.isv.integration.remote.vo.OrderInfo;
+import com.appdirect.isv.integration.remote.vo.saml.SamlRelyingPartyWS;
 import com.appdirect.isv.integration.util.IntegrationUtils;
 import com.appdirect.isv.model.User;
 import com.appdirect.isv.repository.UserRepository;
@@ -34,6 +39,8 @@ public class IntegrationServiceImpl implements IntegrationService {
 	private static final String TIMEZONE_KEY = "timezone";
 	private static final String APP_ADMIN = "appAdmin";
 
+	private final RestTemplate restTemplate = new RestTemplate();
+
 	@Value("${appdirect.base.url}")
 	private String appDirectBaseUrl;
 
@@ -43,6 +50,8 @@ public class IntegrationServiceImpl implements IntegrationService {
 	private AccountService accountService;
 	@Autowired
 	private OAuthPhaseInterceptor oauthPhaseInterceptor;
+	@Autowired
+	private OAuthUrlSigner oauthUrlSigner;
 
 	@Override
 	public AppDirectIntegrationAPI getAppDirectIntegrationApi(String basePath) {
@@ -114,11 +123,21 @@ public class IntegrationServiceImpl implements IntegrationService {
 			accountBean.setEditionCode(eventInfo.getPayload().getOrder().getEditionCode());
 			accountBean.setMaxUsers(eventInfo.getPayload().getOrder().getMaxUsers());
 			accountBean.setAppDirectBaseUrl(appDirectBaseUrl);
+			if (eventInfo.hasLink(SAML_IDP_LINK)) {
+				fetchSamlIdpSettings(accountBean, eventInfo.getLink(SAML_IDP_LINK).getHref());
+			}
 			accountService.createAccount(accountBean, adminBean);
 			result = new APIResult(true, "Account created successfully.");
 			result.setAccountIdentifier(accountBean.getUuid());
 		}
 		return result;
+	}
+
+	private void fetchSamlIdpSettings(AccountBean accountBean, String samlIdpUrl) {
+		URI signedIdpUri = URI.create(oauthUrlSigner.sign(samlIdpUrl + ".json"));
+		SamlRelyingPartyWS idp = restTemplate.getForObject(signedIdpUri, SamlRelyingPartyWS.class);
+		accountBean.setSamlIdpEntityId(idp.getIdpIdentifier());
+		accountBean.setSamlIdpMetadataUrl(samlIdpUrl + ".samlmetadata.xml");
 	}
 
 	private APIResult processSubscriptionChangeEvent(String appDirectBaseUrl, EventInfo eventInfo) {

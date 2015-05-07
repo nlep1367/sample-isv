@@ -31,7 +31,7 @@ public class HomePage extends BaseWebPage {
 
 		List<AccountBean> accountBeans = accountService.readAccounts();
 
-		add(new DataView<AccountBean>("row", new ListDataProvider<AccountBean>(accountBeans)) {
+		add(new DataView<AccountBean>("row", new ListDataProvider<>(accountBeans)) {
 			private static final long serialVersionUID = 4514620914249737635L;
 
 			@Override

@@ -29,10 +29,19 @@
 					<td style="font-weight: bold;">AppDirect Base URL:</td>
 					<td wicket:id="appDirectBaseUrl"></td>
 				</tr>
+				<tr>
+					<td style="font-weight: bold;">SAML IDP entity ID:</td>
+					<td wicket:id="samlIdpEntityId"></td>
+				</tr>
+				<tr>
+					<td style="font-weight: bold;">SAML IDP metadata URL:</td>
+					<td wicket:id="samlIdpMetadataUrl"></td>
+				</tr>
 			</table>
 		</div>
 		<div>
 			<button wicket:id="deleteAccountLink" class="btn btn-default">Delete Account</button>
+			<button wicket:id="samlLoginLink" class="btn btn-default">SAML Login</button>
 		</div>
 		<div>
 			<h3>Add-ons</h3>

@@ -27,8 +27,7 @@ public class CancelAccountPage extends BaseIntegrationPage {
 	public CancelAccountPage(PageParameters parameters) {
 		super(parameters);
 
-		final EventInfo eventInfo = readEvent(parameters);
-
+		EventInfo eventInfo = readEvent(parameters);
 		if (eventInfo == null || eventInfo.getType() != EventType.SUBSCRIPTION_CANCEL) {
 			throw new IllegalStateException("Invalid event object.");
 		}

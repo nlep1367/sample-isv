@@ -50,7 +50,7 @@ public abstract class BaseIntegrationPage extends BaseWebPage {
 
 		AppDirectIntegrationAPI api = integrationService.getAppDirectIntegrationApi(basePath);
 		EventInfo eventInfo = api.readEvent(token);
-		if (StringUtils.isNotBlank(eventUrl) && !basePath.equals(eventInfo.getMarketplace().getBaseUrl())) {
+		if (eventInfo != null && StringUtils.isNotBlank(eventUrl) && !basePath.equals(eventInfo.getMarketplace().getBaseUrl())) {
 			// API 1.1 and event comes from an untrusted source.
 			throw new IllegalArgumentException("Event partner mismatch.");
 		}
