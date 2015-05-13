@@ -14,13 +14,13 @@ public class WicketConfiguration {
 	private WicketApplication wicketApplication;
 
 	@Bean
-    public FilterRegistrationBean wicketFilter() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(new WicketFilter(wicketApplication));
-        registration.setOrder(Integer.MAX_VALUE);
-        registration.setName("wicket-filter");
-        registration.addInitParameter(WicketFilter.FILTER_MAPPING_PARAM, "/*");
-        registration.addUrlPatterns("/*");
-        return registration;
-    }
+	public FilterRegistrationBean wicketFilter() {
+		FilterRegistrationBean registration = new FilterRegistrationBean();
+		registration.setFilter(new WicketFilter(wicketApplication));
+		registration.setOrder(Integer.MAX_VALUE);
+		registration.setName("wicket-filter");
+		registration.addInitParameter(WicketFilter.FILTER_MAPPING_PARAM, "/*");
+		registration.addUrlPatterns("/*");
+		return registration;
+	}
 }
