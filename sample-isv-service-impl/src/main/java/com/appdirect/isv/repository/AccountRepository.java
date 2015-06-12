@@ -6,4 +6,6 @@ import com.appdirect.isv.model.Account;
 
 public interface AccountRepository extends PagingAndSortingRepository<Account, Long> {
 	Account findByUuid(String uuid);
+
+	Account findBySamlIdpEntityId(String samlIdpEntityId);
 }

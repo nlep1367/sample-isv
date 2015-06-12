@@ -1,25 +1,49 @@
 package com.appdirect.isv.config;
 
-import org.openid4java.consumer.ConsumerException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
-import org.springframework.security.openid.AxFetchListFactory;
-import org.springframework.security.openid.OpenID4JavaConsumer;
-import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
-
-import com.appdirect.isv.security.OpenIDUserDetailsServiceImpl;
-import com.google.common.collect.Lists;
+import org.springframework.security.openid.OpenIDConsumer;
+import org.springframework.security.saml.SAMLAuthenticationProvider;
+import org.springframework.security.saml.metadata.MetadataGeneratorFilter;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-	@Bean
-	public AuthenticationUserDetailsService<OpenIDAuthenticationToken> openIdUserDetailsService() {
-		return new OpenIDUserDetailsServiceImpl();
+	/*
+	 * This class is used to break the dependency cycle between SecurityConfiguration and SamlConfiguration
+	 */
+	@Component
+	public static class AuthenticationManagerDelegate {
+		private AuthenticationManager delegate;
+		public AuthenticationManager get() {
+			return authentication -> delegate.authenticate(authentication);
+		};
 	}
+
+	@Autowired
+	private AuthenticationUserDetailsService<OpenIDAuthenticationToken> openIdUserDetailsService;
+	@Autowired
+	private OpenIDConsumer openIdConsumer;
+	@Autowired
+	private MetadataGeneratorFilter samlMetadataGeneratorFilter;
+	@Autowired
+	@Qualifier("samlFilterChain")
+	private FilterChainProxy samlFilterChain;
+	@Autowired
+	private SAMLAuthenticationProvider samlAuthenticationProvider;
+	@Autowired
+	private AuthenticationManagerDelegate authenticationManagerDelegate;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -34,26 +58,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.openidLogin()
 						.loginPage("/login").permitAll()
 						.loginProcessingUrl("/openid")
-						.authenticationUserDetailsService(openIdUserDetailsService())
-						.consumer(openIdConsumer());
+						.authenticationUserDetailsService(openIdUserDetailsService)
+						.consumer(openIdConsumer)
+						.and()
+				.addFilterBefore(samlMetadataGeneratorFilter, ChannelProcessingFilter.class)
+				.addFilterAfter(samlFilterChain, BasicAuthenticationFilter.class);
+
+		authenticationManagerDelegate.delegate = authenticationManager();
+	}
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(samlAuthenticationProvider);
 	}
 
 	@Bean
-	public OpenID4JavaConsumer openIdConsumer() throws ConsumerException {
-		OpenIDAttribute roleAttr = new OpenIDAttribute("roles", "https://www.appdirect.com/schema/user/roles");
-		roleAttr.setCount(99);
-		AxFetchListFactory attributesToFetchFactory = identifier -> Lists.newArrayList(
-				new OpenIDAttribute("userUuid", "https://www.appdirect.com/schema/user/uuid"),
-				new OpenIDAttribute("email", "http://axschema.org/contact/email"),
-				new OpenIDAttribute("firstName", "http://axschema.org/namePerson/first"),
-				new OpenIDAttribute("lastName", "http://axschema.org/namePerson/last"),
-				new OpenIDAttribute("country", "http://axschema.org/contact/country/home"),
-				new OpenIDAttribute("language", "http://axschema.org/pref/language"),
-				roleAttr,
-				new OpenIDAttribute("companyUuid", "https://www.appdirect.com/schema/company/uuid"),
-				new OpenIDAttribute("companyName", "http://axschema.org/company/name"),
-				new OpenIDAttribute("title", "http://axschema.org/company/title")
-		);
-		return new OpenID4JavaConsumer(attributesToFetchFactory);
+	@Override
+	public AuthenticationManager authenticationManager() throws Exception {
+		return super.authenticationManager();
 	}
 }

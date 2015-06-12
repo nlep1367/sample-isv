@@ -20,8 +20,10 @@ public class AccountBean implements Serializable {
 	private String appDirectBaseUrl;
 	private String editionCode;
 	private Integer maxUsers = null;
-	private List<UserBean> users = new ArrayList<UserBean>();
-	private List<AddonBean> addons = new ArrayList<AddonBean>();
+	private List<UserBean> users = new ArrayList<>();
+	private List<AddonBean> addons = new ArrayList<>();
+	private String samlIdpEntityId;
+	private String samlIdpMetadataUrl;
 
 	public AccountBean(Account account) {
 		this.id = account.getId();
@@ -35,6 +37,8 @@ public class AccountBean implements Serializable {
 		for (Addon addon : account.getAddons()) {
 			this.addons.add(new AddonBean(addon));
 		}
+		this.samlIdpEntityId = account.getSamlIdpEntityId();
+		this.samlIdpMetadataUrl = account.getSamlIdpMetadataUrl();
 	}
 
 	public Account toAccount() {
@@ -43,6 +47,8 @@ public class AccountBean implements Serializable {
 		account.setEditionCode(getEditionCode());
 		account.setMaxUsers(getMaxUsers());
 		account.setAppDirectBaseUrl(getAppDirectBaseUrl());
+		account.setSamlIdpEntityId(getSamlIdpEntityId());
+		account.setSamlIdpMetadataUrl(getSamlIdpMetadataUrl());
 		return account;
 	}
 }

@@ -16,6 +16,7 @@ import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
 import com.appdirect.isv.integration.remote.type.ErrorCode;
 import com.appdirect.isv.integration.remote.type.EventType;
 import com.appdirect.isv.integration.remote.vo.EventInfo;
+import com.appdirect.isv.integration.service.IntegrationService;
 import com.appdirect.isv.service.AccountService;
 
 @MountPath("/appdirect/create")
@@ -30,12 +31,10 @@ public class CreateAccountPage extends BaseIntegrationPage {
 	public CreateAccountPage(final PageParameters parameters) {
 		super(parameters);
 
-		final EventInfo eventInfo = readEvent(parameters);
-
+		EventInfo eventInfo = readEvent(parameters);
 		if (eventInfo == null || eventInfo.getType() != EventType.SUBSCRIPTION_ORDER) {
 			throw new IllegalStateException("Invalid event object.");
 		}
-
 		if (accountService.readUserByOpenID(eventInfo.getCreator().getOpenId()) != null) {
 			try {
 				String errorUrl = eventInfo.getReturnUrl() + "&success=false&errorCode=" + ErrorCode.USER_ALREADY_EXISTS + "&message=" + URLEncoder.encode("An account with this user already exists. Use the Import Account", "UTF-8");
@@ -57,6 +56,8 @@ public class CreateAccountPage extends BaseIntegrationPage {
 		add(new Label("editionCode", eventInfo.getPayload().getOrder().getEditionCode()));
 		add(new Label("numOfSeats", String.valueOf(eventInfo.getPayload().getOrder().getMaxUsers())));
 		add(new Label("returnUrl", eventInfo.getReturnUrl()));
+		String samlIdpMetadataUrl = eventInfo.hasLink(IntegrationService.SAML_IDP_LINK) ? eventInfo.getLink(IntegrationService.SAML_IDP_LINK).getHref() : null;
+		add(new Label("samlIdpMetadataUrl", samlIdpMetadataUrl));
 		add(new Link<Void>("createAccount") {
 			private static final long serialVersionUID = 3944839969882170140L;
 

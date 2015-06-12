@@ -3,6 +3,7 @@ package com.appdirect.isv.web.wicket.pages.account;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
@@ -15,6 +16,7 @@ import com.appdirect.isv.dto.AddonBean;
 import com.appdirect.isv.dto.UserBean;
 import com.appdirect.isv.service.AccountService;
 import com.appdirect.isv.web.wicket.pages.BaseWebPage;
+import com.appdirect.isv.web.wicket.pages.authentication.SamlLoginPage;
 
 @MountPath("/account/${accountId}")
 public class AccountPage extends BaseWebPage {
@@ -36,6 +38,8 @@ public class AccountPage extends BaseWebPage {
 		add(new Label("editionCode", accountBean.getEditionCode()));
 		add(new Label("maxUsers", accountBean.getMaxUsers()));
 		add(new Label("appDirectBaseUrl", accountBean.getAppDirectBaseUrl()));
+		add(new Label("samlIdpEntityId", accountBean.getSamlIdpEntityId()));
+		add(new Label("samlIdpMetadataUrl", accountBean.getSamlIdpMetadataUrl()));
 		add(new AjaxLink<Void>("deleteAccountLink") {
 			private static final long serialVersionUID = -278573087265133504L;
 
@@ -45,8 +49,11 @@ public class AccountPage extends BaseWebPage {
 				setResponsePage(getApplication().getHomePage());
 			}
 		});
+		PageParameters samlLoginParameters = new PageParameters()
+			.set(SamlLoginPage.ACCOUNT_ID_PARAM, accountBean.getId());
+		add(new BookmarkablePageLink<Void>("samlLoginLink", SamlLoginPage.class, samlLoginParameters).setVisible(accountBean.getSamlIdpEntityId() != null));
 
-		add(new DataView<AddonBean>("addonrow", new ListDataProvider<AddonBean>(accountBean.getAddons())) {
+		add(new DataView<AddonBean>("addonrow", new ListDataProvider<>(accountBean.getAddons())) {
 			private static final long serialVersionUID = 4514620914249737635L;
 
 			@Override
@@ -59,7 +66,7 @@ public class AccountPage extends BaseWebPage {
 			}
 		});
 
-		add(new DataView<UserBean>("row", new ListDataProvider<UserBean>(accountBean.getUsers())) {
+		add(new DataView<UserBean>("row", new ListDataProvider<>(accountBean.getUsers())) {
 			private static final long serialVersionUID = 4514620914249737635L;
 
 			@Override
