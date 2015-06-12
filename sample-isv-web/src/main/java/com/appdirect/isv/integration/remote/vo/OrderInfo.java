@@ -18,7 +18,7 @@ public class OrderInfo implements Serializable {
 	private String editionCode;
 	private String addonOfferingCode;
 	private PricingDuration pricingDuration;
-	private List<OrderItemInfo> items = new ArrayList<OrderItemInfo>();
+	private List<OrderItemInfo> items = new ArrayList<>();
 
 	public OrderInfo() {
 		super();
