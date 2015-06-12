@@ -18,5 +18,5 @@ public class EventPayload implements Serializable {
 	private AddonBindingInfo addonBinding;
 	private OrderInfo order;
 	private NoticeInfo notice;
-	private HashMap<String, String> configuration = new HashMap<String, String>();
+	private HashMap<String, String> configuration = new HashMap<>();
 }

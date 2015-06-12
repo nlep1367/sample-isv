@@ -51,14 +51,14 @@ public class UsagePage extends BaseWebPage {
 		usageBean.setAccount(accountInfo);
 		UsageItemBean usageItemBean = new UsageItemBean();
 		usageBean.getItems().add(usageItemBean);
-		Form<Void> usageForm = new Form<Void>("usageForm");
+		Form<Void> usageForm = new Form<>("usageForm");
 		final FeedbackPanel feedback = new FeedbackPanel("feedback");
 		usageForm.add(feedback.setOutputMarkupId(true));
 		usageForm.add(new Label("accountIdentifier", new PropertyModel<String>(usageBean, "account.accountIdentifier")));
-		usageForm.add(new DropDownChoice<PricingUnit>("usageUnit", new PropertyModel<PricingUnit>(usageItemBean, "unit"), Arrays.asList(PricingUnit.values())));
-		usageForm.add(new TextArea<BigDecimal>("usageQuantity", new PropertyModel<BigDecimal>(usageItemBean, "quantity")));
-		usageForm.add(new TextArea<BigDecimal>("usagePrice", new PropertyModel<BigDecimal>(usageItemBean, "price")));
-		usageForm.add(new TextArea<String>("usageDescription", new PropertyModel<String>(usageItemBean, "description")));
+		usageForm.add(new DropDownChoice<>("usageUnit", new PropertyModel<PricingUnit>(usageItemBean, "unit"), Arrays.asList(PricingUnit.values())));
+		usageForm.add(new TextArea<>("usageQuantity", new PropertyModel<BigDecimal>(usageItemBean, "quantity")));
+		usageForm.add(new TextArea<>("usagePrice", new PropertyModel<BigDecimal>(usageItemBean, "price")));
+		usageForm.add(new TextArea<>("usageDescription", new PropertyModel<String>(usageItemBean, "description")));
 		usageForm.add(new AjaxButton("report") {
 			private static final long serialVersionUID = -5534177485294277213L;
 
@@ -94,13 +94,13 @@ public class UsagePage extends BaseWebPage {
 
 				UsageItemBean addonItemBean = new UsageItemBean();
 				addonUsageBean.getItems().add(addonItemBean);
-				Form<Void> addonUsageForm = new Form<Void>("addonUsageForm");
+				Form<Void> addonUsageForm = new Form<>("addonUsageForm");
 				final FeedbackPanel addonFeedback = new FeedbackPanel("addonFeedback");
 				addonUsageForm.add(addonFeedback.setOutputMarkupId(true));
 				addonUsageForm.add(new Label("addonCode", new PropertyModel<String>(item.getModelObject(), "code")));
 				addonUsageForm.add(new Label("addonIdentifier", new PropertyModel<String>(addonUsageBean, "addonInstance.id")));
-				addonUsageForm.add(new DropDownChoice<PricingUnit>("addonUnit", new PropertyModel<PricingUnit>(addonItemBean, "unit"), Arrays.asList(PricingUnit.values())).setOutputMarkupId(true));
-				addonUsageForm.add(new TextArea<BigDecimal>("addonQuantity", new PropertyModel<BigDecimal>(addonItemBean, "quantity")).setOutputMarkupId(true));
+				addonUsageForm.add(new DropDownChoice<>("addonUnit", new PropertyModel<PricingUnit>(addonItemBean, "unit"), Arrays.asList(PricingUnit.values())).setOutputMarkupId(true));
+				addonUsageForm.add(new TextArea<>("addonQuantity", new PropertyModel<BigDecimal>(addonItemBean, "quantity")).setOutputMarkupId(true));
 				addonUsageForm.add(new AjaxButton("addonReport") {
 					private static final long serialVersionUID = -6560990507356150457L;
 

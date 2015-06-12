@@ -13,7 +13,7 @@ public class UsageBean implements Serializable {
 
 	private AccountInfo account;
 	private AddonInstanceInfo addonInstance;
-	private List<UsageItemBean> items = new ArrayList<UsageItemBean>();
+	private List<UsageItemBean> items = new ArrayList<>();
 
 	@XmlElement(name = "account")
 	public AccountInfo getAccount() {
