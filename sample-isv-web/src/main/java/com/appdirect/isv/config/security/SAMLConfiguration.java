@@ -1,4 +1,4 @@
-package com.appdirect.isv.config;
+package com.appdirect.isv.config.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,15 +40,15 @@ import org.springframework.security.saml.websso.WebSSOProfileOptions;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
-import com.appdirect.isv.security.SamlMetadataLocationResolverImpl;
-import com.appdirect.isv.security.SamlUserDetailsServiceImpl;
 import com.appdirect.isv.security.saml.HttpMetadataProviderLoader;
 import com.appdirect.isv.security.saml.MetadataLocationResolver;
 import com.appdirect.isv.security.saml.MetadataProviderLoader;
 import com.appdirect.isv.security.saml.OnDemandMetadataManager;
+import com.appdirect.isv.security.saml.SamlMetadataLocationResolverImpl;
+import com.appdirect.isv.security.saml.SamlUserDetailsServiceImpl;
 
 @Configuration
-public class SamlConfiguration {
+public class SAMLConfiguration {
 	private static final String SAML_SP_ENTITY_ID = "https://sample-isv.appdirect.com";
 
 	@Bean

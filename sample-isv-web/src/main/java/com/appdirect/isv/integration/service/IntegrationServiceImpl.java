@@ -9,7 +9,6 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.wicket.util.time.Time;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -19,6 +18,7 @@ import com.appdirect.isv.dto.AddonBean;
 import com.appdirect.isv.dto.UserBean;
 import com.appdirect.isv.integration.oauth.OAuthPhaseInterceptor;
 import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
+import com.appdirect.isv.integration.oauth.OAuthUrlSignerImpl;
 import com.appdirect.isv.integration.remote.service.AppDirectIntegrationAPI;
 import com.appdirect.isv.integration.remote.type.ErrorCode;
 import com.appdirect.isv.integration.remote.type.EventType;
@@ -27,6 +27,7 @@ import com.appdirect.isv.integration.remote.vo.EventInfo;
 import com.appdirect.isv.integration.remote.vo.OrderInfo;
 import com.appdirect.isv.integration.remote.vo.saml.SamlRelyingPartyWS;
 import com.appdirect.isv.integration.util.IntegrationUtils;
+import com.appdirect.isv.model.ApplicationProfile;
 import com.appdirect.isv.model.User;
 import com.appdirect.isv.repository.UserRepository;
 import com.appdirect.isv.service.AccountService;
@@ -41,36 +42,33 @@ public class IntegrationServiceImpl implements IntegrationService {
 
 	private final RestTemplate restTemplate = new RestTemplate();
 
-	@Value("${appdirect.base.url}")
-	private String appDirectBaseUrl;
-
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
 	private AccountService accountService;
-	@Autowired
-	private OAuthPhaseInterceptor oauthPhaseInterceptor;
-	@Autowired
-	private OAuthUrlSigner oauthUrlSigner;
 
 	@Override
-	public AppDirectIntegrationAPI getAppDirectIntegrationApi(String basePath) {
+	public AppDirectIntegrationAPI getAppDirectIntegrationApi(String basePath, ApplicationProfile applicationProfile) {
 		AppDirectIntegrationAPI api = JAXRSClientFactory.create(basePath, AppDirectIntegrationAPI.class);
 		ClientConfiguration config = WebClient.getConfig(api);
-		config.getOutInterceptors().add(oauthPhaseInterceptor);
+		config.getOutInterceptors().add(new OAuthPhaseInterceptor(applicationProfile.getOauthConsumerKey(), applicationProfile.getOauthConsumerSecret()));
 		return api;
 	}
 
 	@Override
 	@Transactional
-	public APIResult processEvent(String eventUrl, String token) {
-		String basePath = appDirectBaseUrl;
-		if (StringUtils.isNotBlank(eventUrl)) {
+	public APIResult processEvent(ApplicationProfile applicationProfile, String eventUrl, String token) {
+		String basePath;
+		if (applicationProfile.isLegacy()) {
+			basePath = applicationProfile.getLegacyMarketplaceBaseUrl();
+		} else {
 			basePath = IntegrationUtils.extractBasePath(eventUrl);
 			token = IntegrationUtils.extractToken(eventUrl);
 		}
+		Preconditions.checkState(StringUtils.isNotBlank(basePath), "basePath should not be blank");
+		Preconditions.checkState(StringUtils.isNotBlank(token), "token should not be blank");
 
-		AppDirectIntegrationAPI api = getAppDirectIntegrationApi(basePath);
+		AppDirectIntegrationAPI api = getAppDirectIntegrationApi(basePath, applicationProfile);
 
 		EventInfo eventInfo = api.readEvent(token);
 		if (eventInfo == null || eventInfo.getType() == null) {
@@ -81,21 +79,21 @@ public class IntegrationServiceImpl implements IntegrationService {
 		}
 		switch(eventInfo.getType()) {
 			case SUBSCRIPTION_ORDER:
-				return processSubscriptionOrderEvent(basePath, eventInfo);
+				return processSubscriptionOrderEvent(basePath, eventInfo, applicationProfile);
 			case SUBSCRIPTION_CHANGE:
-				return processSubscriptionChangeEvent(basePath, eventInfo);
+				return processSubscriptionChangeEvent(basePath, eventInfo, applicationProfile);
 			case SUBSCRIPTION_CANCEL:
-				return processSubscriptionCancelEvent(eventInfo);
+				return processSubscriptionCancelEvent(eventInfo, applicationProfile);
 			case USER_ASSIGNMENT:
-				return processUserAssignmentEvent(eventInfo);
+				return processUserAssignmentEvent(eventInfo, applicationProfile);
 			case USER_UNASSIGNMENT:
-				return processUserUnassignmentEvent(eventInfo);
+				return processUserUnassignmentEvent(eventInfo, applicationProfile);
 			case SUBSCRIPTION_NOTICE:
 				return processSubscriptionNoticeEvent(eventInfo);
 			case ADDON_ORDER:
-				return processAddonOrderEvent(eventInfo);
+				return processAddonOrderEvent(eventInfo, applicationProfile);
 			case ADDON_CHANGE:
-				return processAddonChangeEvent(eventInfo);
+				return processAddonChangeEvent(eventInfo, applicationProfile);
 			case ADDON_CANCEL:
 				return processAddonCancelEvent(eventInfo);
 			default:
@@ -103,7 +101,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 		}
 	}
 
-	private APIResult processSubscriptionOrderEvent(String appDirectBaseUrl, EventInfo eventInfo) {
+	private APIResult processSubscriptionOrderEvent(String appDirectBaseUrl, EventInfo eventInfo, ApplicationProfile applicationProfile) {
 		Preconditions.checkState(eventInfo.getType() == EventType.SUBSCRIPTION_ORDER);
 		final APIResult result;
 		// Create the account.
@@ -118,13 +116,13 @@ public class IntegrationServiceImpl implements IntegrationService {
 			adminBean.setFirstName(eventInfo.getCreator().getFirstName());
 			adminBean.setLastName(eventInfo.getCreator().getLastName());
 			adminBean.setAdmin(true);
-			AccountBean accountBean = new AccountBean();
+			AccountBean accountBean = new AccountBean(applicationProfile);
 			accountBean.setUuid(eventInfo.getPayload().getCompany().getUuid());
 			accountBean.setEditionCode(eventInfo.getPayload().getOrder().getEditionCode());
 			accountBean.setMaxUsers(eventInfo.getPayload().getOrder().getMaxUsers());
 			accountBean.setAppDirectBaseUrl(appDirectBaseUrl);
 			if (eventInfo.hasLink(SAML_IDP_LINK)) {
-				fetchSamlIdpSettings(accountBean, eventInfo.getLink(SAML_IDP_LINK).getHref());
+				fetchSamlIdpSettings(accountBean, eventInfo.getLink(SAML_IDP_LINK).getHref(), applicationProfile);
 			}
 			accountService.createAccount(accountBean, adminBean);
 			result = new APIResult(true, "Account created successfully.");
@@ -133,18 +131,19 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return result;
 	}
 
-	private void fetchSamlIdpSettings(AccountBean accountBean, String samlIdpUrl) {
+	private void fetchSamlIdpSettings(AccountBean accountBean, String samlIdpUrl, ApplicationProfile applicationProfile) {
+		OAuthUrlSigner oauthUrlSigner = new OAuthUrlSignerImpl(applicationProfile.getOauthConsumerKey(), applicationProfile.getOauthConsumerSecret());
 		URI signedIdpUri = URI.create(oauthUrlSigner.sign(samlIdpUrl + ".json"));
 		SamlRelyingPartyWS idp = restTemplate.getForObject(signedIdpUri, SamlRelyingPartyWS.class);
 		accountBean.setSamlIdpEntityId(idp.getIdpIdentifier());
 		accountBean.setSamlIdpMetadataUrl(samlIdpUrl + ".samlmetadata.xml");
 	}
 
-	private APIResult processSubscriptionChangeEvent(String appDirectBaseUrl, EventInfo eventInfo) {
+	private APIResult processSubscriptionChangeEvent(String appDirectBaseUrl, EventInfo eventInfo, ApplicationProfile applicationProfile) {
 		Preconditions.checkState(eventInfo.getType() == EventType.SUBSCRIPTION_CHANGE);
 		APIResult result;
 		try {
-			AccountBean accountBean = new AccountBean();
+			AccountBean accountBean = new AccountBean(applicationProfile);
 			accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 			accountBean.setAppDirectBaseUrl(appDirectBaseUrl);
 			accountBean.setEditionCode(eventInfo.getPayload().getOrder().getEditionCode());
@@ -157,11 +156,11 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return result;
 	}
 
-	private APIResult processSubscriptionCancelEvent(EventInfo eventInfo) {
+	private APIResult processSubscriptionCancelEvent(EventInfo eventInfo, ApplicationProfile applicationProfile) {
 		Preconditions.checkState(eventInfo.getType() == EventType.SUBSCRIPTION_CANCEL);
 		APIResult result;
 		try {
-			AccountBean accountBean = new AccountBean();
+			AccountBean accountBean = new AccountBean(applicationProfile);
 			accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 			accountService.delete(accountBean);
 			result = new APIResult(true, String.format("Successfully deleted account with identifier %s", eventInfo.getPayload().getAccount().getAccountIdentifier()));
@@ -171,10 +170,10 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return result;
 	}
 
-	private APIResult processUserAssignmentEvent(EventInfo eventInfo) {
+	private APIResult processUserAssignmentEvent(EventInfo eventInfo, ApplicationProfile applicationProfile) {
 		Preconditions.checkState(eventInfo.getType() == EventType.USER_ASSIGNMENT);
 		APIResult result;
-		AccountBean accountBean = new AccountBean();
+		AccountBean accountBean = new AccountBean(applicationProfile);
 		accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 		// Read info about the user.
 		UserBean userBean = new UserBean();
@@ -214,11 +213,11 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return result;
 	}
 
-	private APIResult processUserUnassignmentEvent(EventInfo eventInfo) {
+	private APIResult processUserUnassignmentEvent(EventInfo eventInfo, ApplicationProfile applicationProfile) {
 		Preconditions.checkState(eventInfo.getType() == EventType.USER_UNASSIGNMENT);
 		APIResult result;
 		try {
-			AccountBean accountBean = new AccountBean();
+			AccountBean accountBean = new AccountBean(applicationProfile);
 			accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 			User user = readUserByOpenID(eventInfo.getPayload().getUser().getOpenId());
 			if (!StringUtils.equals(accountBean.getUuid(), user.getAccount().getUuid())) {
@@ -243,11 +242,11 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return new APIResult(true, "Dummy notice success.");
 	}
 
-	private APIResult processAddonOrderEvent(EventInfo eventInfo) {
+	private APIResult processAddonOrderEvent(EventInfo eventInfo, ApplicationProfile applicationProfile) {
 		Preconditions.checkState(eventInfo.getType() == EventType.ADDON_ORDER);
 		APIResult result;
 		try {
-			AccountBean accountBean = new AccountBean();
+			AccountBean accountBean = new AccountBean(applicationProfile);
 			accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 			AddonBean addonBean = new AddonBean();
 			OrderInfo orderInfo = eventInfo.getPayload().getOrder();
@@ -265,11 +264,11 @@ public class IntegrationServiceImpl implements IntegrationService {
 		return result;
 	}
 
-	private APIResult processAddonChangeEvent(EventInfo eventInfo) {
+	private APIResult processAddonChangeEvent(EventInfo eventInfo, ApplicationProfile applicationProfile) {
 		Preconditions.checkState(eventInfo.getType() == EventType.ADDON_CHANGE);
 		APIResult result;
 		try {
-			AccountBean accountBean = new AccountBean();
+			AccountBean accountBean = new AccountBean(applicationProfile);
 			accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 			AddonBean addonBean = new AddonBean();
 			OrderInfo orderInfo = eventInfo.getPayload().getOrder();

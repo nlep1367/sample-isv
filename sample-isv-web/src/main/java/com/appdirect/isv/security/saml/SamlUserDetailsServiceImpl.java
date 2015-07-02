@@ -1,4 +1,4 @@
-package com.appdirect.isv.security;
+package com.appdirect.isv.security.saml;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.appdirect.isv.dto.UserBean;
 import com.appdirect.isv.model.User;
 import com.appdirect.isv.repository.UserRepository;
+import com.appdirect.isv.security.UserDetailsImpl;
 
 public class SamlUserDetailsServiceImpl implements SAMLUserDetailsService {
 	@Autowired

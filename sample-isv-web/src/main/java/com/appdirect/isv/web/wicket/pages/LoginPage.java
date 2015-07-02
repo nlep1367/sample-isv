@@ -1,13 +1,10 @@
-package com.appdirect.isv.web.wicket.pages.authentication;
+package com.appdirect.isv.web.wicket.pages;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.wicketstuff.annotation.mount.MountPath;
-
-import com.appdirect.isv.web.wicket.pages.BaseWebPage;
 
 @MountPath("/login")
 public class LoginPage extends BaseWebPage {
@@ -26,6 +23,5 @@ public class LoginPage extends BaseWebPage {
 			}
 			error("An error occurred during login. Message: " + message);
 		}
-		add(new FeedbackPanel("feedback"));
 	}
 }

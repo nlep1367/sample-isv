@@ -2,55 +2,24 @@
 <html xmlns:wicket="http://wicket.apache.org">
 	<wicket:head>
 	    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cerulean/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cosmo/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/cyborg/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/darkly/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/flatly/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/journal/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/lumen/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/paper/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/readable/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/sandstone/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/simplex/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/slate/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/spacelab/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/superhero/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/united/bootstrap.min.css" rel="stylesheet" /> -->
-<!-- 		<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.2/yeti/bootstrap.min.css" rel="stylesheet" /> -->
 		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" />
-		<title>Sample ISV</title>
+		<title><wicket:message key="page.title" /> | Sample ISV</title>
 		<style type="text/css">
+			.page-header, .page-header h1 {
+				margin-top: 0;
+			}
 			body {
 				padding-bottom: 40px;
 			}
 		</style>
 	</wicket:head>
 	<body>
-		<nav class="navbar navbar-default" role="navigation">
-			<div class="container">
-				<ul class="nav navbar-nav">
-					<li><a wicket:id="home" class="brand">Sample ISV</a></li>
-					<li><a href="https://www.appdirect.com">AppDirect</a></li>
-					<li><a wicket:id="account">Account</a></li>
-					<li><a wicket:id="users">Users</a></li>
-					<li><a wicket:id="login">Login</a></li>
-					<li><a wicket:id="logout">Logout</a></li>
-					<li>
-						<span wicket:id="loginInfo">
-							<span style="font-weight: bold;">Login Information:</span>
-							<span style="background-color: lightBlue;">
-								<span>User Name:&nbsp;</span>
-								<span wicket:id="firstName"></span>&nbsp;<span wicket:id="lastName"></span>
-								<span>OpenID:&nbsp;</span>
-								<span wicket:id="openId"></span>
-							</span>
-						</span>
-					</li>
-				</ul>
-			</div>
-		</nav>
+		<div wicket:id="header"></div>
 		<div class="container">
+			<div class="page-header">
+				<h1><wicket:message key="page.title" /></h1>
+			</div>
+			<div wicket:id="feedback"></div>
 			<wicket:child />
 			<footer>
 				<p>Copyright &#169; AppDirect, 2015</p>

@@ -1,4 +1,4 @@
-package com.appdirect.isv.config;
+package com.appdirect.isv.config.security;
 
 import org.openid4java.consumer.ConsumerException;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +9,7 @@ import org.springframework.security.openid.OpenID4JavaConsumer;
 import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 
-import com.appdirect.isv.security.OpenIDUserDetailsServiceImpl;
+import com.appdirect.isv.security.openid.OpenIDUserDetailsServiceImpl;
 import com.google.common.collect.Lists;
 
 @Configuration

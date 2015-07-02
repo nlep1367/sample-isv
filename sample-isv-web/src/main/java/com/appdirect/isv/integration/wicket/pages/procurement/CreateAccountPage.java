@@ -12,7 +12,6 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import com.appdirect.isv.dto.AccountBean;
 import com.appdirect.isv.dto.UserBean;
-import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
 import com.appdirect.isv.integration.remote.type.ErrorCode;
 import com.appdirect.isv.integration.remote.type.EventType;
 import com.appdirect.isv.integration.remote.vo.EventInfo;
@@ -25,8 +24,6 @@ public class CreateAccountPage extends BaseIntegrationPage {
 
 	@SpringBean
 	private AccountService accountService;
-	@SpringBean
-	private OAuthUrlSigner oauthUrlSigner;
 
 	public CreateAccountPage(final PageParameters parameters) {
 		super(parameters);
@@ -72,9 +69,9 @@ public class CreateAccountPage extends BaseIntegrationPage {
 				adminBean.setLastName(eventInfo.getCreator().getLastName());
 				adminBean.setAdmin(true);
 
-				AccountBean accountBean = new AccountBean();
+				AccountBean accountBean = new AccountBean(applicationProfile);
 				accountBean.setUuid(eventInfo.getPayload().getCompany().getUuid());
-				accountBean.setAppDirectBaseUrl(getBasePath(parameters));
+				accountBean.setAppDirectBaseUrl(basePath);
 				accountBean.setEditionCode(eventInfo.getPayload().getOrder().getEditionCode());
 				accountBean.setMaxUsers(eventInfo.getPayload().getOrder().getMaxUsers());
 

@@ -1,4 +1,4 @@
-package com.appdirect.isv.web.wicket.pages.account;
+package com.appdirect.isv.web.wicket.pages;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -15,8 +15,6 @@ import com.appdirect.isv.dto.AccountBean;
 import com.appdirect.isv.dto.AddonBean;
 import com.appdirect.isv.dto.UserBean;
 import com.appdirect.isv.service.AccountService;
-import com.appdirect.isv.web.wicket.pages.BaseWebPage;
-import com.appdirect.isv.web.wicket.pages.authentication.SamlLoginPage;
 
 @MountPath("/account/${accountId}")
 public class AccountPage extends BaseWebPage {
