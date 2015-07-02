@@ -3,7 +3,6 @@ package com.appdirect.isv.config;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Timer;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -12,13 +11,11 @@ import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.util.resource.ResourceException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLBootstrap;
 import org.springframework.security.saml.SAMLEntryPoint;
-import org.springframework.security.saml.SAMLProcessingFilter;
+import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
 import org.springframework.security.saml.key.EmptyKeyManager;
 import org.springframework.security.saml.key.KeyManager;
@@ -40,26 +37,19 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
 import org.springframework.security.saml.websso.WebSSOProfileImpl;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
-import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.appdirect.isv.config.SecurityConfiguration.AuthenticationManagerDelegate;
 import com.appdirect.isv.security.SamlMetadataLocationResolverImpl;
 import com.appdirect.isv.security.SamlUserDetailsServiceImpl;
 import com.appdirect.isv.security.saml.HttpMetadataProviderLoader;
 import com.appdirect.isv.security.saml.MetadataLocationResolver;
 import com.appdirect.isv.security.saml.MetadataProviderLoader;
 import com.appdirect.isv.security.saml.OnDemandMetadataManager;
+
 @Configuration
 public class SamlConfiguration {
 	private static final String SAML_SP_ENTITY_ID = "https://sample-isv.appdirect.com";
-
-	@Autowired
-	private AuthenticationManagerDelegate authenticationManagerDelegate;
 
 	@Bean
 	public SavedRequestAwareAuthenticationSuccessHandler samlSuccessRedirectHandler() {
@@ -82,16 +72,6 @@ public class SamlConfiguration {
 	}
 
 	@Bean
-	public SAMLProcessingFilter samlWebSsoProcessingFilter() throws Exception {
-		SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
-		// The real authentication manager gets set in SecurityConfiguration
-		samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManagerDelegate.get());
-		samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(samlSuccessRedirectHandler());
-		samlWebSSOProcessingFilter.setAuthenticationFailureHandler(samlAuthenticationFailureHandler());
-		return samlWebSSOProcessingFilter;
-	}
-
-	@Bean
 	public MetadataGeneratorFilter samlMetadataGeneratorFilter() {
 		return new MetadataGeneratorFilter(samlMetadataGenerator());
 	}
@@ -101,21 +81,6 @@ public class SamlConfiguration {
 		SAMLEntryPoint samlEntryPoint = new SAMLEntryPoint();
 		samlEntryPoint.setDefaultProfileOptions(samlWebSsoProfileOptions());
 		return samlEntryPoint;
-	}
-
-	@Bean
-	public FilterChainProxy samlFilterChain() throws Exception {
-		List<SecurityFilterChain> chains = new ArrayList<>();
-		chains.add(new DefaultSecurityFilterChain(
-				new AntPathRequestMatcher(SAMLEntryPoint.FILTER_URL + "/**"),
-				samlEntryPoint()));
-		chains.add(new DefaultSecurityFilterChain(
-				new AntPathRequestMatcher(MetadataDisplayFilter.FILTER_URL + "/**"),
-				samlMetadataDisplayFilter()));
-		chains.add(new DefaultSecurityFilterChain(
-				new AntPathRequestMatcher(SAMLProcessingFilter.FILTER_URL + "/**"),
-				samlWebSsoProcessingFilter()));
-		return new FilterChainProxy(chains);
 	}
 
 	@Bean
@@ -159,15 +124,7 @@ public class SamlConfiguration {
 	}
 
 	@Bean
-	public SAMLAuthenticationProvider samlAuthenticationProvider() {
-		SAMLAuthenticationProvider samlAuthenticationProvider = new SAMLAuthenticationProvider();
-		samlAuthenticationProvider.setUserDetails(samlUserDetailsService());
-		samlAuthenticationProvider.setForcePrincipalAsString(false);
-		return samlAuthenticationProvider;
-	}
-
-	@Bean
-	public SAMLContextProviderImpl samlContextProvider() {
+	public SAMLContextProvider samlContextProvider() {
 		return new SAMLContextProviderImpl();
 	}
 
