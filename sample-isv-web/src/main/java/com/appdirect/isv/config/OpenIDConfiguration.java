@@ -13,7 +13,7 @@ import com.appdirect.isv.security.OpenIDUserDetailsServiceImpl;
 import com.google.common.collect.Lists;
 
 @Configuration
-public class OpenIdConfiguration {
+public class OpenIDConfiguration {
 	@Bean
 	public AuthenticationUserDetailsService<OpenIDAuthenticationToken> openIdUserDetailsService() {
 		return new OpenIDUserDetailsServiceImpl();
