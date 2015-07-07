@@ -3,24 +3,20 @@ sample-isv
 
 Sample application that integrates with AppDirect for distribution.
 
-Sample ISV 1 (1.0 integration):
+# Run Locally
 
-	mvn -P test-isv-1 clean package
+Create MySQL database schema:
 
-Sample ISV 2 (1.1 integration):
+	create database isv CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
-	mvn -P test-isv-2 clean package
+Launch the application:
 
-Artifacts can then be deployed to Cloud Foundry (for example).
+	mvn clean install
+	cd sample-isv-web/
+	mvn -Dspring.profiles.active=local spring-boot:run
 
+# Deploy to Cloud Foundry
 
-To run the application locally:
-
-Create database schema:
-
-	create database isv CHARACTER SET utf8 COLLATE utf8_unicode_ci
-
-Execute spring-boot locally:
-
-	mvn spring-boot:run -Dspring.profiles.active=local
-	
+	mvn clean install
+	cd sample-isv-web/
+	mvn -o cf:push -Dcf.username={username} -Dcf.password={password}

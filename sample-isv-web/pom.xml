@@ -166,6 +166,29 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>org.cloudfoundry</groupId>
+				<artifactId>cf-maven-plugin</artifactId>
+				<version>1.0.4</version>
+				<configuration>
+					<server>mycloudfoundry-instance</server>
+					<target>http://api.run.pivotal.io</target>
+					<org>AppDirect</org>
+					<space>development</space>
+					<appname>sample-isv</appname>
+					<url>sample-isv.cfapps.io</url>
+					<memory>1024</memory>
+					<diskQuota>1024</diskQuota>
+					<healthCheckTimeout>60</healthCheckTimeout>
+					<services>
+						<service>
+							<name>sample-isv-db</name>
+							<label>cleardb</label>
+							<plan>spark</plan>
+						</service>
+					</services>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
