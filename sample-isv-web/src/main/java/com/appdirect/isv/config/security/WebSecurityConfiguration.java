@@ -1,4 +1,4 @@
-package com.appdirect.isv.config;
+package com.appdirect.isv.config.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.openid.OpenIDConsumer;
@@ -29,7 +31,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private AuthenticationUserDetailsService<OpenIDAuthenticationToken> openIdUserDetailsService;
 	@Autowired
@@ -46,6 +48,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private MetadataDisplayFilter samlMetadataDisplayFilter;
 	@Autowired
 	private MetadataGeneratorFilter samlMetadataGeneratorFilter;
+
+	@Bean
+	public SecurityContextHolderStrategy securityContextHolderStrategy() {
+		return SecurityContextHolder.getContextHolderStrategy();
+	}
 
 	@Bean
 	public SAMLAuthenticationProvider samlAuthenticationProvider() {

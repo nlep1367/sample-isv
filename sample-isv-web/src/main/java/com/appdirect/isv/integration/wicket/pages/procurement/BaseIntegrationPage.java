@@ -3,13 +3,18 @@ package com.appdirect.isv.integration.wicket.pages.procurement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.security.authentication.AuthenticationServiceException;
 
-import com.appdirect.isv.config.ServerConfiguration;
+import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
+import com.appdirect.isv.integration.oauth.OAuthUrlSignerImpl;
 import com.appdirect.isv.integration.remote.service.AppDirectIntegrationAPI;
 import com.appdirect.isv.integration.remote.vo.EventInfo;
 import com.appdirect.isv.integration.service.IntegrationService;
 import com.appdirect.isv.integration.util.IntegrationUtils;
+import com.appdirect.isv.model.ApplicationProfile;
+import com.appdirect.isv.security.oauth.ContextualApplicationProfileGetter;
 import com.appdirect.isv.web.wicket.pages.BaseWebPage;
+import com.google.common.base.Preconditions;
 
 public abstract class BaseIntegrationPage extends BaseWebPage {
 	private static final long serialVersionUID = -6204718580885978058L;
@@ -18,40 +23,35 @@ public abstract class BaseIntegrationPage extends BaseWebPage {
 	public static final String TOKEN_PARAM = "token";
 
 	@SpringBean
-	private ServerConfiguration serverConfiguration;
+	protected ContextualApplicationProfileGetter contextualApplicationProfileGetter;
 	@SpringBean
 	private IntegrationService integrationService;
 
-	public BaseIntegrationPage() {
-		super();
-	}
+	protected final ApplicationProfile applicationProfile;
+	protected final OAuthUrlSigner oauthUrlSigner;
+	protected final String basePath;
+	protected final String token;
 
 	public BaseIntegrationPage(PageParameters parameters) {
 		super(parameters);
-	}
-
-	protected String getBasePath(PageParameters parameters) {
-		String basePath = serverConfiguration.getAppDirectBaseUrl();
-		String eventUrl = parameters.get(EVENT_URL_PARAM).toOptionalString();
-		if (StringUtils.isNotBlank(eventUrl)) {
-			basePath = IntegrationUtils.extractBasePath(eventUrl);
+		this.applicationProfile = contextualApplicationProfileGetter.get()
+				.orElseThrow(() -> new AuthenticationServiceException("Cannot find contextual application profile."));
+		this.oauthUrlSigner = new OAuthUrlSignerImpl(applicationProfile.getOauthConsumerKey(), applicationProfile.getOauthConsumerSecret());
+		if (applicationProfile.isLegacy()) {
+			this.basePath = applicationProfile.getLegacyMarketplaceBaseUrl();
+			this.token = parameters.get(TOKEN_PARAM).toOptionalString();
+		} else {
+			String eventUrl = parameters.get(EVENT_URL_PARAM).toOptionalString();
+			this.basePath = IntegrationUtils.extractBasePath(eventUrl);
+			this.token = IntegrationUtils.extractToken(eventUrl);
 		}
-		return basePath;
+		Preconditions.checkState(StringUtils.isNotBlank(this.basePath), "basePath should not be blank");
 	}
 
 	protected EventInfo readEvent(PageParameters parameters) {
-		String basePath = getBasePath(parameters);
-
-		String token = parameters.get(TOKEN_PARAM).toOptionalString();
-		String eventUrl = parameters.get(EVENT_URL_PARAM).toOptionalString();
-		if (StringUtils.isNotBlank(eventUrl)) {
-			token = IntegrationUtils.extractToken(eventUrl);
-		}
-
-		AppDirectIntegrationAPI api = integrationService.getAppDirectIntegrationApi(basePath);
+		AppDirectIntegrationAPI api = integrationService.getAppDirectIntegrationApi(basePath, applicationProfile);
 		EventInfo eventInfo = api.readEvent(token);
-		if (eventInfo != null && StringUtils.isNotBlank(eventUrl) && !basePath.equals(eventInfo.getMarketplace().getBaseUrl())) {
-			// API 1.1 and event comes from an untrusted source.
+		if (!basePath.equals(eventInfo.getMarketplace().getBaseUrl())) {
 			throw new IllegalArgumentException("Event partner mismatch.");
 		}
 		return eventInfo;

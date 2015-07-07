@@ -45,7 +45,7 @@ public class CancelAccountPage extends BaseIntegrationPage {
 				// Delete the account.
 				StringBuilder returnUrl = new StringBuilder(eventInfo.getReturnUrl());
 				try {
-					AccountBean accountBean = new AccountBean();
+					AccountBean accountBean = new AccountBean(applicationProfile);
 					accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 					accountService.delete(accountBean);
 					returnUrl.append("&success=true");

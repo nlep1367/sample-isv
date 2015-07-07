@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.appdirect.isv.integration.remote.type.ErrorCode;
 import com.appdirect.isv.integration.remote.vo.APIResult;
 import com.appdirect.isv.integration.service.IntegrationService;
+import com.appdirect.isv.model.ApplicationProfile;
+import com.appdirect.isv.security.oauth.ContextualApplicationProfileGetter;
 
 @Slf4j
 @RestController
@@ -24,13 +27,17 @@ public class IntegrationController {
 	private static final String HTTP_X_FORWARDED_FOR = "HTTP_X_FORWARDED_FOR";
 
 	@Autowired
+	private ContextualApplicationProfileGetter contextualApplicationProfileGetter;
+	@Autowired
 	private IntegrationService integrationService;
 
 	@RequestMapping("/processEvent")
 	public APIResult processEvent(HttpServletRequest request, @RequestParam(value = "eventUrl", required = false) String eventUrl, @RequestParam(value = "token", required = false) String token) {
+		ApplicationProfile applicationProfile = contextualApplicationProfileGetter.get()
+				.orElseThrow(() -> new AuthenticationServiceException("Cannot find contextual application profile."));
 		APIResult result;
 		try {
-			result = integrationService.processEvent(eventUrl, token);
+			result = integrationService.processEvent(applicationProfile, eventUrl, token);
 		} catch (RuntimeException e) {
 			result = new APIResult();
 			result.setSuccess(false);

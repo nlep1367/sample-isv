@@ -7,11 +7,3 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     generate-ddl: true
-
-appdirect:
-  base:
-    url: https://test.appdirect.com
-  oauth:
-    consumer:
-      key: demo-app-1
-      secret: fGWi8NZzjy0mbJLM

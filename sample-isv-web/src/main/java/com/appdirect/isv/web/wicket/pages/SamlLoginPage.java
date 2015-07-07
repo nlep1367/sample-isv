@@ -1,4 +1,4 @@
-package com.appdirect.isv.web.wicket.pages.authentication;
+package com.appdirect.isv.web.wicket.pages;
 
 import java.nio.charset.StandardCharsets;
 
@@ -12,7 +12,6 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import com.appdirect.isv.dto.AccountBean;
 import com.appdirect.isv.service.AccountService;
-import com.appdirect.isv.web.wicket.pages.BaseWebPage;
 
 /**
  * This landing page used to login using an specific account SAML IDP.

@@ -64,7 +64,7 @@ public class UsagePage extends BaseWebPage {
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-				AppDirectIntegrationAPI api = integrationService.getAppDirectIntegrationApi(accountBean.getAppDirectBaseUrl());
+				AppDirectIntegrationAPI api = integrationService.getAppDirectIntegrationApi(accountBean.getAppDirectBaseUrl(), accountBean.getApplicationProfile());
 				BillingAPIResult result = api.billUsage(usageBean);
 				info(String.format("success: %s, message: %s", result.isSuccess(), result.getMessage()));
 				target.add(feedback);
@@ -106,7 +106,7 @@ public class UsagePage extends BaseWebPage {
 
 					@Override
 					protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-						AppDirectIntegrationAPI api = integrationService.getAppDirectIntegrationApi(accountBean.getAppDirectBaseUrl());
+						AppDirectIntegrationAPI api = integrationService.getAppDirectIntegrationApi(accountBean.getAppDirectBaseUrl(), accountBean.getApplicationProfile());
 						BillingAPIResult result = api.billUsage(addonUsageBean);
 						info(String.format("success: %s, message: %s", result.isSuccess(), result.getMessage()));
 						target.add(addonFeedback);

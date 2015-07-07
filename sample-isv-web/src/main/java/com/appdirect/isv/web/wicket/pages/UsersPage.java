@@ -1,4 +1,4 @@
-package com.appdirect.isv.web.wicket.pages.account;
+package com.appdirect.isv.web.wicket.pages;
 
 import java.util.List;
 
@@ -12,7 +12,6 @@ import org.wicketstuff.annotation.mount.MountPath;
 
 import com.appdirect.isv.dto.UserBean;
 import com.appdirect.isv.service.AccountService;
-import com.appdirect.isv.web.wicket.pages.BaseWebPage;
 
 @MountPath("/users")
 public class UsersPage extends BaseWebPage {

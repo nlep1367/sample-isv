@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.wicketstuff.annotation.scan.AnnotatedMountScanner;
 
 import com.appdirect.isv.web.wicket.pages.HomePage;
-import com.appdirect.isv.web.wicket.pages.authentication.LoginPage;
+import com.appdirect.isv.web.wicket.pages.LoginPage;
 import com.appdirect.isv.web.wicket.session.WicketSession;
 
 /**
@@ -22,9 +22,10 @@ public class WicketApplication extends AuthenticatedWebApplication {
 	@Override
 	protected void init() {
 		super.init();
-		// Allow wicket to inject spring beans into components using @SpringBean annotation
+		// Allow Wicket to inject spring beans into components using @SpringBean annotation.
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		new AnnotatedMountScanner().scanPackage("com.appdirect.isv").mount(this);
+		getMarkupSettings().setStripWicketTags(true);
 		getRequestCycleSettings().setRenderStrategy(RenderStrategy.ONE_PASS_RENDER);
 	}
 

@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:wicket="http://wicket.apache.org">
+	<wicket:panel>
+		<nav class="navbar navbar-default" role="navigation">
+			<div class="container">
+				<ul class="nav navbar-nav">
+					<li><a wicket:id="home" class="navbar-brand">Sample ISV</a></li>
+					<li><a wicket:id="account">Account</a></li>
+					<li><a wicket:id="users">Users</a></li>
+					<li><a wicket:id="applicationProfiles">Application Profiles</a></li>
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li><a wicket:id="login">Login</a></li>
+					<li><a wicket:id="logout">Logout</a></li>
+					<li>
+						<span wicket:id="loginInfo">
+							<span style="font-weight: bold;">Login Information:</span>
+							<span style="background-color: lightBlue;">
+								<span>User Name:&nbsp;</span>
+								<span wicket:id="firstName"></span>&nbsp;<span wicket:id="lastName"></span>
+								<span>OpenID:&nbsp;</span>
+								<span wicket:id="openId"></span>
+							</span>
+						</span>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</wicket:panel>
+</html>
