@@ -1,5 +1,7 @@
 package com.appdirect.isv.security.openid;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +22,11 @@ public class OpenIDUserDetailsServiceImpl implements AuthenticationUserDetailsSe
 	@Transactional(readOnly = true)
 	public UserDetails loadUserDetails(OpenIDAuthenticationToken token) throws UsernameNotFoundException {
 		String openId = token.getIdentityUrl();
-		User user = userRepository.findByOpenId(openId);
-		if (user == null) {
+		List<User> users = userRepository.findByAppDirectOpenId(openId);
+		if (users.isEmpty()) {
 			throw new UsernameNotFoundException(openId);
 		}
-		UserBean userBean = new UserBean(user);
+		UserBean userBean = new UserBean(users.get(0));
 		return new UserDetailsImpl(userBean);
 	}
 }

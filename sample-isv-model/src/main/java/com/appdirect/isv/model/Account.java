@@ -30,8 +30,8 @@ public class Account {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "uuid", unique = true)
-	private String uuid;
+	@Column(name = "uuid")
+	private String appDirectUuid;
 
 	@Column(name = "appdirect_base_url", length = 1000)
 	private String appDirectBaseUrl;
@@ -62,5 +62,15 @@ public class Account {
 		this();
 		Preconditions.checkNotNull(applicationProfile);
 		this.applicationProfile = applicationProfile;
+	}
+
+	public void addUser(User user) {
+		users.add(user);
+		user.setAccount(this);
+	}
+
+	public void addAddon(Addon addon) {
+		addons.add(addon);
+		addon.setAccount(this);
 	}
 }

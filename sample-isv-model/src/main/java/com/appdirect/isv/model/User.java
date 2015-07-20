@@ -24,11 +24,11 @@ public class User {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "uuid", unique = true)
-	private String uuid;
+	@Column(name = "uuid")
+	private String appDirectUuid;
 
-	@Column(name = "open_id", unique = true)
-	private String openId;
+	@Column(name = "open_id")
+	private String appDirectOpenId;
 
 	@Column(name = "email")
 	private String email;

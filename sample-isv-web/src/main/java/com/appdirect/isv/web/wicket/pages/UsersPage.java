@@ -30,7 +30,7 @@ public class UsersPage extends BaseWebPage {
 			public void populateItem(final Item<UserBean> item) {
 				final UserBean userBean = item.getModelObject();
 				item.add(new Label("id", String.valueOf(userBean.getId())));
-				item.add(new Label("openId", userBean.getOpenId()));
+				item.add(new Label("appDirectOpenId", userBean.getAppDirectOpenId()));
 				item.add(new Label("email", userBean.getEmail()));
 				item.add(new Label("firstName", userBean.getFirstName()));
 				item.add(new Label("lastName", userBean.getLastName()));

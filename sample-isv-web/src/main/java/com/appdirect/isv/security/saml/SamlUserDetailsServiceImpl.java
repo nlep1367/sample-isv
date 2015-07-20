@@ -1,5 +1,7 @@
 package com.appdirect.isv.security.saml;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.saml.SAMLCredential;
@@ -18,12 +20,12 @@ public class SamlUserDetailsServiceImpl implements SAMLUserDetailsService {
 	@Override
 	@Transactional(readOnly = true)
 	public Object loadUserBySAML(SAMLCredential credential) throws UsernameNotFoundException {
-		String userUuid = credential.getNameID().getValue();
-		User user = userRepository.findByUuid(userUuid);
-		if (user == null) {
-			throw new UsernameNotFoundException(userUuid);
+		String appDirectUuid = credential.getNameID().getValue();
+		List<User> users = userRepository.findByAppDirectUuid(appDirectUuid);
+		if (users.isEmpty()) {
+			throw new UsernameNotFoundException(appDirectUuid);
 		}
-		UserBean userBean = new UserBean(user);
+		UserBean userBean = new UserBean(users.get(0));
 		return new UserDetailsImpl(userBean);
 	}
 }

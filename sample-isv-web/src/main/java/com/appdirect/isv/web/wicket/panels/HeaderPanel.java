@@ -29,7 +29,7 @@ public class HeaderPanel extends Panel {
 		UserBean currentUser = WicketSession.get().getCurrentUser();
 		AccountBean currentAccount;
 		try {
-			currentAccount = currentUser == null ? null : accountService.readAccountByUserID(currentUser.getId());
+			currentAccount = currentUser == null ? null : accountService.readUserAccount(currentUser.getId());
 		} catch (ObjectNotFoundException onfe) {
 			// Account or user was deleted.
 			currentAccount = null;
@@ -47,7 +47,7 @@ public class HeaderPanel extends Panel {
 
 		WebMarkupContainer loginInfo = new WebMarkupContainer("loginInfo");
 		if (currentUser != null) {
-			loginInfo.add(new Label("openId", String.valueOf(currentUser.getOpenId())));
+			loginInfo.add(new Label("appDirectOpenId", String.valueOf(currentUser.getAppDirectOpenId())));
 			loginInfo.add(new Label("firstName", currentUser.getFirstName()));
 			loginInfo.add(new Label("lastName", currentUser.getLastName()));
 		} else {

@@ -29,10 +29,10 @@ public class AccountPage extends BaseWebPage {
 		super(parameters);
 
 		Long accountId = parameters.get(ACCOUNT_ID_PARAM).toLongObject();
-		final AccountBean accountBean = accountService.readAccountByID(accountId);
+		final AccountBean accountBean = accountService.readAccount(accountId);
 
 		add(new Label("id", accountBean.getId()));
-		add(new Label("uuid", accountBean.getUuid()));
+		add(new Label("appDirectUuid", accountBean.getAppDirectUuid()));
 		add(new Label("editionCode", accountBean.getEditionCode()));
 		add(new Label("maxUsers", accountBean.getMaxUsers()));
 		add(new Label("appDirectBaseUrl", accountBean.getAppDirectBaseUrl()));
@@ -43,7 +43,7 @@ public class AccountPage extends BaseWebPage {
 
 			@Override
 			public void onClick(AjaxRequestTarget target) {
-				accountService.delete(accountBean);
+				accountService.deleteAccount(accountBean.getId());
 				setResponsePage(getApplication().getHomePage());
 			}
 		});
@@ -58,7 +58,6 @@ public class AccountPage extends BaseWebPage {
 			public void populateItem(final Item<AddonBean> item) {
 				final AddonBean addonBean = item.getModelObject();
 				item.add(new Label("id", addonBean.getId()));
-				item.add(new Label("identifier", addonBean.getAddonIdentifier()));
 				item.add(new Label("code", addonBean.getCode()));
 				item.add(new Label("quantity", addonBean.getQuantity()));
 			}
@@ -71,8 +70,8 @@ public class AccountPage extends BaseWebPage {
 			public void populateItem(final Item<UserBean> item) {
 				final UserBean userBean = item.getModelObject();
 				item.add(new Label("id", userBean.getId()));
-				item.add(new Label("uuid", userBean.getUuid()));
-				item.add(new Label("openId", userBean.getOpenId()));
+				item.add(new Label("appDirectUuid", userBean.getAppDirectUuid()));
+				item.add(new Label("appDirectOpenId", userBean.getAppDirectOpenId()));
 				item.add(new Label("email", userBean.getEmail()));
 				item.add(new Label("firstName", userBean.getFirstName()));
 				item.add(new Label("lastName", userBean.getLastName()));

@@ -45,9 +45,9 @@ public class UsagePage extends BaseWebPage {
 	public UsagePage(PageParameters parameters) {
 		super(parameters);
 		final UsageBean usageBean = new UsageBean();
-		final AccountBean accountBean = accountService.readAccountByUserID(WicketSession.get().getCurrentUser().getId());
+		final AccountBean accountBean = accountService.readUserAccount(WicketSession.get().getCurrentUser().getId());
 		AccountInfo accountInfo = new AccountInfo();
-		accountInfo.setAccountIdentifier(accountBean.getUuid());
+		accountInfo.setAccountIdentifier(accountBean.getAppDirectUuid());
 		usageBean.setAccount(accountInfo);
 		UsageItemBean usageItemBean = new UsageItemBean();
 		usageBean.getItems().add(usageItemBean);
@@ -85,11 +85,11 @@ public class UsagePage extends BaseWebPage {
 				final UsageBean addonUsageBean = new UsageBean();
 
 				AccountInfo accountInfo = new AccountInfo();
-				accountInfo.setAccountIdentifier(accountBean.getUuid());
+				accountInfo.setAccountIdentifier(accountBean.getAppDirectUuid());
 				addonUsageBean.setAccount(accountInfo);
 
 				AddonInstanceInfo addonAccountInfo = new AddonInstanceInfo();
-				addonAccountInfo.setId(item.getModelObject().getAddonIdentifier());
+				addonAccountInfo.setId(item.getModelObject().getId().toString());
 				addonUsageBean.setAddonInstance(addonAccountInfo);
 
 				UsageItemBean addonItemBean = new UsageItemBean();

@@ -19,7 +19,7 @@ public class AccountBean implements Serializable {
 	private static final long serialVersionUID = 2991393185869834690L;
 
 	private Long id;
-	private String uuid;
+	private String appDirectUuid;
 	private String appDirectBaseUrl;
 	private String editionCode;
 	private Integer maxUsers = null;
@@ -38,7 +38,7 @@ public class AccountBean implements Serializable {
 	public AccountBean(Account account) {
 		super();
 		this.id = account.getId();
-		this.uuid = account.getUuid();
+		this.appDirectUuid = account.getAppDirectUuid();
 		this.appDirectBaseUrl = account.getAppDirectBaseUrl();
 		this.editionCode = account.getEditionCode();
 		this.maxUsers = account.getMaxUsers();
@@ -55,7 +55,7 @@ public class AccountBean implements Serializable {
 
 	public Account toAccount() {
 		Account account = new Account(applicationProfile);
-		account.setUuid(getUuid());
+		account.setAppDirectUuid(getAppDirectUuid());
 		account.setEditionCode(getEditionCode());
 		account.setMaxUsers(getMaxUsers());
 		account.setAppDirectBaseUrl(getAppDirectBaseUrl());

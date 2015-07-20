@@ -7,31 +7,39 @@ import com.appdirect.isv.dto.AddonBean;
 import com.appdirect.isv.dto.UserBean;
 
 public interface AccountService {
-	Long createAccount(AccountBean accountBean, UserBean adminBean);
+	/*
+	 * Account operations.
+	 */
 
-	void createUser(UserBean userBean, AccountBean accountBean);
-
-	UserBean readUserByOpenID(String openId);
-
-	List<UserBean> readUsers();
-
-	AccountBean readAccountByUUID(String accountUuid);
-
-	AccountBean readAccountByID(Long accountId);
-
-	AccountBean readAccountByUserID(Long userId);
+	void createAccount(AccountBean accountBean, UserBean adminBean);
 
 	List<AccountBean> readAccounts();
 
-	void update(AccountBean accountBean);
+	AccountBean readAccount(Long accountId);
 
-	void delete(AccountBean accountBean);
+	void updateAccount(AccountBean accountBean);
+
+	void deleteAccount(Long accountId);
+
+	/*
+	 * User operations.
+	 */
+
+	void createUser(UserBean userBean, Long accountId);
+
+	List<UserBean> readUsers();
+
+	AccountBean readUserAccount(Long userId);
 
 	void deleteUser(Long userId);
 
-	void createAddon(AddonBean addonBean, AccountBean accountBean);
+	/*
+	 * Addon operations.
+	 */
+
+	void createAddon(AddonBean addonBean, Long accountId);
 
 	void updateAddon(AddonBean addonBean);
 
-	void deleteAddon(AddonBean addonBean);
+	void deleteAddon(Long addonId);
 }

@@ -22,9 +22,9 @@ public class AccountController {
 		return new Resources<>(accountService.readUsers());
 	}
 
-	@RequestMapping("/accounts/{accountUuid}")
-	public AccountBean readAccountByUUID(@PathVariable("accountUuid") String accountUuid) {
-		return accountService.readAccountByUUID(accountUuid);
+	@RequestMapping("/accounts/{accountId}")
+	public AccountBean readAccountByAppDirectUUID(@PathVariable("accountId") Long accountId) {
+		return accountService.readAccount(accountId);
 	}
 
 	@RequestMapping("/accounts")

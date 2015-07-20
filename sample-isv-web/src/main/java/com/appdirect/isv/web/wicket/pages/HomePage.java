@@ -35,8 +35,8 @@ public class HomePage extends BaseWebPage {
 						.set(AccountPage.ACCOUNT_ID_PARAM, accountBean.getId());
 				item.add(new BookmarkablePageLink<Void>("idLink", AccountPage.class, parameters)
 						.add(new Label("id", accountBean.getId())));
-				item.add(new BookmarkablePageLink<Void>("uuidLink", AccountPage.class, parameters)
-						.add(new Label("uuid", accountBean.getUuid())));
+				item.add(new BookmarkablePageLink<Void>("appDirectUuidLink", AccountPage.class, parameters)
+						.add(new Label("appDirectUuid", accountBean.getAppDirectUuid())));
 				item.add(new Label("editionCode", accountBean.getEditionCode()));
 				item.add(new Label("maxUsers", accountBean.getMaxUsers()));
 				item.add(new ExternalLink("appDirectBaseUrl", accountBean.getAppDirectBaseUrl(), accountBean.getAppDirectBaseUrl()));

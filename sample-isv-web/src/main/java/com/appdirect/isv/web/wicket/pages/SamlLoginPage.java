@@ -34,7 +34,7 @@ public class SamlLoginPage extends BaseWebPage {
 	public SamlLoginPage(final PageParameters parameters) {
 		super(parameters);
 		long accountId = parameters.get(ACCOUNT_ID_PARAM).toLong();
-		AccountBean accountBean = accountService.readAccountByID(accountId);
+		AccountBean accountBean = accountService.readAccount(accountId);
 		if (accountBean == null || accountBean.getSamlIdpEntityId() == null) {
 			throw new AccessDeniedException("Account " + accountId + " is not SAML-enabled.");
 		}

@@ -8,7 +8,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.hibernate.ObjectNotFoundException;
 import org.wicketstuff.annotation.mount.MountPath;
 
-import com.appdirect.isv.dto.AccountBean;
 import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
 import com.appdirect.isv.integration.remote.type.ErrorCode;
 import com.appdirect.isv.integration.remote.type.EventType;
@@ -45,11 +44,10 @@ public class CancelAccountPage extends BaseIntegrationPage {
 				// Delete the account.
 				StringBuilder returnUrl = new StringBuilder(eventInfo.getReturnUrl());
 				try {
-					AccountBean accountBean = new AccountBean(applicationProfile);
-					accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
-					accountService.delete(accountBean);
+					Long accountId = Long.valueOf(eventInfo.getPayload().getAccount().getAccountIdentifier());
+					accountService.deleteAccount(accountId);
 					returnUrl.append("&success=true");
-				} catch (ObjectNotFoundException e) {
+				} catch (ObjectNotFoundException | NumberFormatException e) {
 					returnUrl.append("&success=false&errorCode=").append(ErrorCode.ACCOUNT_NOT_FOUND);
 				}
 				String signedUrl = oauthUrlSigner.sign(returnUrl.toString());

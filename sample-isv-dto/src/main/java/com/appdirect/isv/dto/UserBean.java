@@ -12,8 +12,8 @@ public class UserBean implements Serializable {
 	private static final long serialVersionUID = -8955516091357057444L;
 
 	private Long id;
-	private String uuid;
-	private String openId;
+	private String appDirectUuid;
+	private String appDirectOpenId;
 	private String email;
 	private String firstName;
 	private String lastName;
@@ -24,8 +24,8 @@ public class UserBean implements Serializable {
 
 	public UserBean(User user) {
 		this.id = user.getId();
-		this.uuid = user.getUuid();
-		this.openId = user.getOpenId();
+		this.appDirectUuid = user.getAppDirectUuid();
+		this.appDirectOpenId = user.getAppDirectOpenId();
 		this.email = user.getEmail();
 		this.firstName = user.getFirstName();
 		this.lastName = user.getLastName();
@@ -37,8 +37,8 @@ public class UserBean implements Serializable {
 
 	public User toUser() {
 		User user = new User();
-		user.setUuid(getUuid());
-		user.setOpenId(getOpenId());
+		user.setAppDirectUuid(getAppDirectUuid());
+		user.setAppDirectOpenId(getAppDirectOpenId());
 		user.setEmail(getEmail());
 		user.setFirstName(getFirstName());
 		user.setLastName(getLastName());

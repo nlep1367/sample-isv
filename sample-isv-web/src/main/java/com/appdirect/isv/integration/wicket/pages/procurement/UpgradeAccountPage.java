@@ -45,12 +45,12 @@ public class UpgradeAccountPage extends BaseIntegrationPage {
 			@Override
 			public void onClick() {
 				AccountBean accountBean = new AccountBean(applicationProfile);
-				accountBean.setUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
+				accountBean.setAppDirectUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
 				accountBean.setEditionCode(eventInfo.getPayload().getOrder().getEditionCode());
 				accountBean.setMaxUsers(eventInfo.getPayload().getOrder().getMaxUsers());
 				StringBuffer returnUrl = new StringBuffer(eventInfo.getReturnUrl());;
 				try {
-					accountService.update(accountBean);
+					accountService.updateAccount(accountBean);
 					returnUrl.append("&success=true");
 				} catch (ObjectNotFoundException onfe) {
 					returnUrl.append("&success=false&errorCode=").append(ErrorCode.ACCOUNT_NOT_FOUND.toString());
