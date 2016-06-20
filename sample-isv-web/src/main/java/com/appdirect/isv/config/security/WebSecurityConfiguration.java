@@ -25,7 +25,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -39,7 +39,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private SAMLUserDetailsService samlUserDetailsService;
 	@Autowired
-	private SavedRequestAwareAuthenticationSuccessHandler samlSuccessRedirectHandler;
+	private AuthenticationSuccessHandler samlAuthenticationSuccessHandler;
 	@Autowired
 	private SimpleUrlAuthenticationFailureHandler samlAuthenticationFailureHandler;
 	@Autowired
@@ -66,7 +66,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public SAMLProcessingFilter samlWebSsoProcessingFilter() throws Exception {
 		SAMLProcessingFilter samlWebSSOProcessingFilter = new SAMLProcessingFilter();
 		samlWebSSOProcessingFilter.setAuthenticationManager(authenticationManagerBean());
-		samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(samlSuccessRedirectHandler);
+		samlWebSSOProcessingFilter.setAuthenticationSuccessHandler(samlAuthenticationSuccessHandler);
 		samlWebSSOProcessingFilter.setAuthenticationFailureHandler(samlAuthenticationFailureHandler);
 		return samlWebSSOProcessingFilter;
 	}
