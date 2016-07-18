@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.saml.SAMLBootstrap;
 import org.springframework.security.saml.SAMLEntryPoint;
+import org.springframework.security.saml.SAMLRelayStateSuccessHandler;
 import org.springframework.security.saml.context.SAMLContextProvider;
 import org.springframework.security.saml.context.SAMLContextProviderImpl;
 import org.springframework.security.saml.key.EmptyKeyManager;
@@ -37,7 +38,7 @@ import org.springframework.security.saml.websso.WebSSOProfileConsumerHoKImpl;
 import org.springframework.security.saml.websso.WebSSOProfileConsumerImpl;
 import org.springframework.security.saml.websso.WebSSOProfileImpl;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 import com.appdirect.isv.security.saml.HttpMetadataProviderLoader;
@@ -52,8 +53,8 @@ public class SAMLConfiguration {
 	private static final String SAML_SP_ENTITY_ID = "https://sample-isv.appdirect.com";
 
 	@Bean
-	public SavedRequestAwareAuthenticationSuccessHandler samlSuccessRedirectHandler() {
-		SavedRequestAwareAuthenticationSuccessHandler successRedirectHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+	public AuthenticationSuccessHandler samlAuthenticationSuccessHandler() {
+		SAMLRelayStateSuccessHandler successRedirectHandler = new SAMLRelayStateSuccessHandler();
 		successRedirectHandler.setDefaultTargetUrl("/");
 		return successRedirectHandler;
 	}
