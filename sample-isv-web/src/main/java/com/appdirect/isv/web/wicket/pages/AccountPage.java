@@ -1,12 +1,15 @@
 package com.appdirect.isv.web.wicket.pages;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.HiddenField;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.annotation.mount.MountPath;
@@ -49,7 +52,11 @@ public class AccountPage extends BaseWebPage {
 		});
 		PageParameters samlLoginParameters = new PageParameters()
 			.set(SamlLoginPage.ACCOUNT_ID_PARAM, accountBean.getId());
-		add(new BookmarkablePageLink<Void>("samlLoginLink", SamlLoginPage.class, samlLoginParameters).setVisible(accountBean.getSamlIdpEntityId() != null));
+		add(new BookmarkablePageLink<Void>("samlLoginLink", SamlLoginPage.class, samlLoginParameters)
+			.setVisible(accountBean.getSamlIdpEntityId() != null));
+		add(new HiddenField<>("openIdIdentifier", Model.of(accountBean.getAppDirectBaseUrl() + "/openid/id"))
+			.add(new AttributeModifier("name", "openid_identifier"))
+			.setVisible(accountBean.getSamlIdpEntityId() == null));
 
 		add(new DataView<AddonBean>("addonrow", new ListDataProvider<>(accountBean.getAddons())) {
 			private static final long serialVersionUID = 4514620914249737635L;
