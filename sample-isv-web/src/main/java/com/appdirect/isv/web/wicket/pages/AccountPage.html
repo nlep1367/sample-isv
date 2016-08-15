@@ -34,8 +34,12 @@
 			</table>
 		</div>
 		<div>
-			<button wicket:id="deleteAccountLink" class="btn btn-default">Delete Account</button>
-			<button wicket:id="samlLoginLink" class="btn btn-default">SAML Login</button>
+			<button wicket:id="deleteAccountLink" class="btn btn-danger">Delete Account</button>
+			<button wicket:id="samlLoginLink" class="btn btn-primary">SAML Login</button>
+			<form action="/openid" method="POST" wicket:enclosure="openIdIdentifier" class="hidden-form">
+				<input wicket:id="openIdIdentifier" name="openid_identifier" type="hidden"/>
+				<button class="btn btn-primary" type="submit">OpenID Login</button>
+			</form>
 		</div>
 		<div>
 			<h3>Add-ons</h3>
