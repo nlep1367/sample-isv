@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SNIHostName;
 import javax.net.ssl.SSLParameters;
 import javax.net.ssl.SSLSocket;
@@ -75,7 +74,6 @@ public class IntegrationServiceImpl implements IntegrationService {
 			tlsClientParameters = new TLSClientParameters();
 			config.getHttpConduit().setTlsClientParameters(tlsClientParameters);
 		}
-		tlsClientParameters.setUseHttpsURLConnectionDefaultSslSocketFactory(true);
 
 		URL baseUrl;
 		try {
@@ -87,7 +85,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 		SSLParameters sslParameters = new SSLParameters();
 		sslParameters.setServerNames(ImmutableList.of(new SNIHostName(baseUrl.getHost())));
 		SSLSocketFactory wrappedSSLSocketFactory = new SSLSocketFactoryWrapper((SSLSocketFactory) SSLSocketFactory.getDefault(), sslParameters);
-		HttpsURLConnection.setDefaultSSLSocketFactory(wrappedSSLSocketFactory);
+		tlsClientParameters.setSSLSocketFactory(wrappedSSLSocketFactory);
 	}
 
 	@Override

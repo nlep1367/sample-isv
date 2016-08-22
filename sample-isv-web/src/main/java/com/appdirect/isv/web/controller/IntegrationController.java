@@ -49,61 +49,42 @@ public class IntegrationController {
 			@RequestParam(value = "eventUrl", required = false) String eventUrl,
 			@RequestParam(value = "token", required = false) String token,
 			@RequestParam(value = "asyncDelay", required = false) Integer asyncDelayMillis) {
-		ApplicationProfile applicationProfile = contextualApplicationProfileGetter.get().orElseThrow(() -> new AuthenticationServiceException("Contextual application profile not found"));
-		String clientIpAddress = extractIpAddress(request);
-		if (asyncDelayMillis == null) {
-			return processEventNow(applicationProfile, clientIpAddress, eventUrl, token);
-		}
-		response.setStatus(HttpStatus.ACCEPTED.value());
-		return processAndRegisterEventLater(applicationProfile, clientIpAddress, eventUrl, asyncDelayMillis);
-	}
-
-	private APIResult processEventNow(ApplicationProfile applicationProfile, String clientIpAddress, String eventUrl, String token) {
-		APIResult apiResult;
 		try {
-			apiResult = integrationService.processEvent(applicationProfile, eventUrl, token);
+			ApplicationProfile applicationProfile = contextualApplicationProfileGetter.get().orElseThrow(() -> new AuthenticationServiceException("Contextual application profile not found"));
+			Preconditions.checkState(asyncDelayMillis == null || eventUrl != null, "eventUrl must be specified if asyncDelay is specified"); // async doesn't work with just a token
+			APIResult apiResult = processEvent(applicationProfile, extractIpAddress(request), eventUrl, token);
+			if (asyncDelayMillis != null) {
+				apiResult = registerResultAfterAsyncDelay(applicationProfile, eventUrl, apiResult, asyncDelayMillis, response);
+			}
+			return apiResult;
 		} catch (RuntimeException e) {
 			log.error("Error processing event with eventUrl={} or token={}", eventUrl, token, e);
-			apiResult = toAPIResult(e);
-		}
-		apiResult.setMessage(String.format("From IP: %s. %s", clientIpAddress, apiResult.getMessage()));
-		log.info("Returning [result={}].", apiResult);
-		return apiResult;
-	}
-
-	private APIResult processAndRegisterEventLater(ApplicationProfile applicationProfile, String clientIpAddress, String eventUrl, int asyncDelayMillis) {
-		try {
-			Preconditions.checkState(eventUrl != null, "eventUrl must be specified if asyncDelay is specified");
-			Date startTime = DateUtils.addMilliseconds(new Date(), asyncDelayMillis);
-			log.info("Event with eventUrl={} will be processed asynchronously in {} milliseconds", eventUrl, asyncDelayMillis);
-			threadPoolTaskScheduler.schedule(() -> processAndRegisterEvent(applicationProfile, clientIpAddress, eventUrl), startTime);
-			return new APIResult(true, String.format("Event will be processed asynchronously in %s milliseconds.", asyncDelayMillis));
-		} catch (RuntimeException e) {
 			return toAPIResult(e);
 		}
 	}
 
-	private void processAndRegisterEvent(ApplicationProfile applicationProfile, String clientIpAddress, String eventUrl) {
-		APIResult apiResult;
-		try {
-			log.info("Processing asynchronous event with eventUrl={}", eventUrl);
-			apiResult = processEventNow(applicationProfile, clientIpAddress, eventUrl, null);
-		} catch (RuntimeException e) {
-			log.error("Error processing asynchronous event; result will not be registered", e);
-			return;
-		}
+	private APIResult processEvent(ApplicationProfile applicationProfile, String clientIpAddress, String eventUrl, String token) {
+		APIResult apiResult = integrationService.processEvent(applicationProfile, eventUrl, token);
+		apiResult.setMessage(String.format("From IP: %s. %s", clientIpAddress, apiResult.getMessage()));
+		log.info("Result of processing event with eventUrl={} or token={}: {}", eventUrl, token, apiResult);
+		return apiResult;
+	}
 
-		try {
-			registerResult(applicationProfile, eventUrl, apiResult);
-		} catch (RuntimeException e) {
-			log.error("Error registering asynchronous event result", e);
-			return;
-		}
+	private APIResult registerResultAfterAsyncDelay(ApplicationProfile applicationProfile, String eventUrl, APIResult apiResult, int asyncDelayMillis, HttpServletResponse response) {
+		response.setStatus(HttpStatus.ACCEPTED.value());
+		Date startTime = DateUtils.addMilliseconds(new Date(), asyncDelayMillis);
+		log.info("Result for event with eventUrl={} will be registered asynchronously in {} milliseconds", eventUrl, asyncDelayMillis);
+		threadPoolTaskScheduler.schedule(() -> registerResult(applicationProfile, eventUrl, apiResult), startTime);
+		return new APIResult(true, String.format("Event result will be registered asynchronously in %s milliseconds.", asyncDelayMillis));
 	}
 
 	private void registerResult(ApplicationProfile applicationProfile, String eventUrl, APIResult apiResult) {
-		AppDirectIntegrationApi appDirectIntegrationApi = appDirectIntegrationApiFactory.get(applicationProfile);
-		appDirectIntegrationApi.registerResult(eventUrl, apiResult);
+		try {
+			AppDirectIntegrationApi appDirectIntegrationApi = appDirectIntegrationApiFactory.get(applicationProfile);
+			appDirectIntegrationApi.registerResult(eventUrl, apiResult);
+		} catch (RuntimeException e) {
+			log.error("Error registering asynchronous event result", e);
+		}
 	}
 
 	private APIResult toAPIResult(RuntimeException e) {
