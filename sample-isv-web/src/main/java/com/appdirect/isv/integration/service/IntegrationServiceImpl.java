@@ -1,8 +1,19 @@
 package com.appdirect.isv.integration.service;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.Socket;
 import java.net.URI;
+import java.net.URL;
+
+import javax.net.ssl.SNIHostName;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.jaxrs.client.ClientConfiguration;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -30,9 +41,9 @@ import com.appdirect.isv.integration.remote.vo.saml.SamlRelyingPartyWS;
 import com.appdirect.isv.integration.util.IntegrationUtils;
 import com.appdirect.isv.model.ApplicationProfile;
 import com.appdirect.isv.model.User;
-import com.appdirect.isv.repository.UserRepository;
 import com.appdirect.isv.service.AccountService;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 
 @Service
 public class IntegrationServiceImpl implements IntegrationService {
@@ -44,8 +55,6 @@ public class IntegrationServiceImpl implements IntegrationService {
 	private final RestTemplate restTemplate = new RestTemplate();
 
 	@Autowired
-	private UserRepository userRepository;
-	@Autowired
 	private AccountService accountService;
 
 	@Override
@@ -53,7 +62,30 @@ public class IntegrationServiceImpl implements IntegrationService {
 		AppDirectIntegrationAPI api = JAXRSClientFactory.create(basePath, AppDirectIntegrationAPI.class);
 		ClientConfiguration config = WebClient.getConfig(api);
 		config.getOutInterceptors().add(new OAuthPhaseInterceptor(applicationProfile.getOauthConsumerKey(), applicationProfile.getOauthConsumerSecret()));
+		setSNIHostName(config, basePath);
 		return api;
+	}
+
+	private void setSNIHostName(ClientConfiguration config, String basePath) {
+		// Workaround (from http://javabreaks.blogspot.com/2015/12/java-ssl-handshake-with-server-name.html) to issue where SSL does not use SNI extension, possibly causing the wrong certificate chain to be retrieved from the server
+
+		TLSClientParameters tlsClientParameters = config.getHttpConduit().getTlsClientParameters();
+		if (tlsClientParameters == null) {
+			tlsClientParameters = new TLSClientParameters();
+			config.getHttpConduit().setTlsClientParameters(tlsClientParameters);
+		}
+
+		URL baseUrl;
+		try {
+			baseUrl = new URL(basePath);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+
+		SSLParameters sslParameters = new SSLParameters();
+		sslParameters.setServerNames(ImmutableList.of(new SNIHostName(baseUrl.getHost())));
+		SSLSocketFactory wrappedSSLSocketFactory = new SSLSocketFactoryWrapper((SSLSocketFactory) SSLSocketFactory.getDefault(), sslParameters);
+		tlsClientParameters.setSSLSocketFactory(wrappedSSLSocketFactory);
 	}
 
 	@Override
@@ -78,7 +110,7 @@ public class IntegrationServiceImpl implements IntegrationService {
 		if (StringUtils.isNotBlank(eventUrl) && !basePath.equals(eventInfo.getMarketplace().getBaseUrl())) {
 			return new APIResult(false, ErrorCode.UNKNOWN_ERROR, "Event partner mismatch.");
 		}
-		switch(eventInfo.getType()) {
+		switch (eventInfo.getType()) {
 			case SUBSCRIPTION_ORDER:
 				return processSubscriptionOrderEvent(basePath, eventInfo, applicationProfile);
 			case SUBSCRIPTION_CHANGE:
@@ -294,5 +326,71 @@ public class IntegrationServiceImpl implements IntegrationService {
 			result = new APIResult(false, ErrorCode.ACCOUNT_NOT_FOUND, e.getMessage());
 		}
 		return result;
+	}
+
+	private static class SSLSocketFactoryWrapper extends SSLSocketFactory {
+		private final SSLSocketFactory wrappedFactory;
+		private final SSLParameters sslParameters;
+
+		public SSLSocketFactoryWrapper(SSLSocketFactory factory, SSLParameters sslParameters) {
+			this.wrappedFactory = factory;
+			this.sslParameters = sslParameters;
+		}
+
+		@Override
+		public Socket createSocket(Socket s, String host, int port, boolean autoClose) throws IOException {
+			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(s, host, port, autoClose);
+			setSSLParameters(socket);
+			return socket;
+		}
+
+		@Override
+		public Socket createSocket(String host, int port) throws IOException {
+			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(host, port);
+			setSSLParameters(socket);
+			return socket;
+		}
+
+		@Override
+		public Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException {
+			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(host, port, localHost, localPort);
+			setSSLParameters(socket);
+			return socket;
+		}
+
+		@Override
+		public Socket createSocket(InetAddress host, int port) throws IOException {
+			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(host, port);
+			setSSLParameters(socket);
+			return socket;
+		}
+
+		@Override
+		public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort) throws IOException {
+			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(address, port, localAddress, localPort);
+			setSSLParameters(socket);
+			return socket;
+		}
+
+		@Override
+		public Socket createSocket() throws IOException {
+			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket();
+			setSSLParameters(socket);
+			return socket;
+		}
+
+		@Override
+		public String[] getDefaultCipherSuites() {
+			return wrappedFactory.getDefaultCipherSuites();
+		}
+
+		@Override
+		public String[] getSupportedCipherSuites() {
+			return wrappedFactory.getSupportedCipherSuites();
+		}
+
+		private void setSSLParameters(SSLSocket socket) {
+			socket.setSSLParameters(sslParameters);
+		}
 	}
 }
