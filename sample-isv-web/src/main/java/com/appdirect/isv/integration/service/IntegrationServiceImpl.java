@@ -1,15 +1,7 @@
 package com.appdirect.isv.integration.service;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URI;
-import java.net.URL;
 
-import javax.net.ssl.SNIHostName;
-import javax.net.ssl.SSLParameters;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,11 +31,11 @@ import com.appdirect.isv.integration.remote.vo.OrderInfo;
 import com.appdirect.isv.integration.remote.vo.UserInfo;
 import com.appdirect.isv.integration.remote.vo.saml.SamlRelyingPartyWS;
 import com.appdirect.isv.integration.util.IntegrationUtils;
+import com.appdirect.isv.integration.util.ssl.SniSslSocketFactory;
 import com.appdirect.isv.model.ApplicationProfile;
 import com.appdirect.isv.model.User;
 import com.appdirect.isv.service.AccountService;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 
 @Service
 public class IntegrationServiceImpl implements IntegrationService {
@@ -62,11 +54,11 @@ public class IntegrationServiceImpl implements IntegrationService {
 		AppDirectIntegrationAPI api = JAXRSClientFactory.create(basePath, AppDirectIntegrationAPI.class);
 		ClientConfiguration config = WebClient.getConfig(api);
 		config.getOutInterceptors().add(new OAuthPhaseInterceptor(applicationProfile.getOauthConsumerKey(), applicationProfile.getOauthConsumerSecret()));
-		setSNIHostName(config, basePath);
+		overrideSslSocketFactory(config);
 		return api;
 	}
 
-	private void setSNIHostName(ClientConfiguration config, String basePath) {
+	private void overrideSslSocketFactory(ClientConfiguration config) {
 		// Workaround (from http://javabreaks.blogspot.com/2015/12/java-ssl-handshake-with-server-name.html) to issue where SSL does not use SNI extension, possibly causing the wrong certificate chain to be retrieved from the server
 
 		TLSClientParameters tlsClientParameters = config.getHttpConduit().getTlsClientParameters();
@@ -75,17 +67,12 @@ public class IntegrationServiceImpl implements IntegrationService {
 			config.getHttpConduit().setTlsClientParameters(tlsClientParameters);
 		}
 
-		URL baseUrl;
-		try {
-			baseUrl = new URL(basePath);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
+		SSLSocketFactory sslFactory = tlsClientParameters.getSSLSocketFactory();
+		if (sslFactory == null) {
+			sslFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 		}
-
-		SSLParameters sslParameters = new SSLParameters();
-		sslParameters.setServerNames(ImmutableList.of(new SNIHostName(baseUrl.getHost())));
-		SSLSocketFactory wrappedSSLSocketFactory = new SSLSocketFactoryWrapper((SSLSocketFactory) SSLSocketFactory.getDefault(), sslParameters);
-		tlsClientParameters.setSSLSocketFactory(wrappedSSLSocketFactory);
+		SniSslSocketFactory sniSslFactory = new SniSslSocketFactory(sslFactory);
+		tlsClientParameters.setSSLSocketFactory(sniSslFactory);
 	}
 
 	@Override
@@ -326,71 +313,5 @@ public class IntegrationServiceImpl implements IntegrationService {
 			result = new APIResult(false, ErrorCode.ACCOUNT_NOT_FOUND, e.getMessage());
 		}
 		return result;
-	}
-
-	private static class SSLSocketFactoryWrapper extends SSLSocketFactory {
-		private final SSLSocketFactory wrappedFactory;
-		private final SSLParameters sslParameters;
-
-		public SSLSocketFactoryWrapper(SSLSocketFactory factory, SSLParameters sslParameters) {
-			this.wrappedFactory = factory;
-			this.sslParameters = sslParameters;
-		}
-
-		@Override
-		public Socket createSocket(Socket s, String host, int port, boolean autoClose) throws IOException {
-			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(s, host, port, autoClose);
-			setSSLParameters(socket);
-			return socket;
-		}
-
-		@Override
-		public Socket createSocket(String host, int port) throws IOException {
-			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(host, port);
-			setSSLParameters(socket);
-			return socket;
-		}
-
-		@Override
-		public Socket createSocket(String host, int port, InetAddress localHost, int localPort) throws IOException {
-			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(host, port, localHost, localPort);
-			setSSLParameters(socket);
-			return socket;
-		}
-
-		@Override
-		public Socket createSocket(InetAddress host, int port) throws IOException {
-			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(host, port);
-			setSSLParameters(socket);
-			return socket;
-		}
-
-		@Override
-		public Socket createSocket(InetAddress address, int port, InetAddress localAddress, int localPort) throws IOException {
-			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket(address, port, localAddress, localPort);
-			setSSLParameters(socket);
-			return socket;
-		}
-
-		@Override
-		public Socket createSocket() throws IOException {
-			SSLSocket socket = (SSLSocket) wrappedFactory.createSocket();
-			setSSLParameters(socket);
-			return socket;
-		}
-
-		@Override
-		public String[] getDefaultCipherSuites() {
-			return wrappedFactory.getDefaultCipherSuites();
-		}
-
-		@Override
-		public String[] getSupportedCipherSuites() {
-			return wrappedFactory.getSupportedCipherSuites();
-		}
-
-		private void setSSLParameters(SSLSocket socket) {
-			socket.setSSLParameters(sslParameters);
-		}
 	}
 }
