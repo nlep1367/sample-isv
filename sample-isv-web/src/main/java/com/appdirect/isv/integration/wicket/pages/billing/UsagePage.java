@@ -47,7 +47,7 @@ public class UsagePage extends BaseWebPage {
 		final UsageBean usageBean = new UsageBean();
 		final AccountBean accountBean = accountService.readUserAccount(WicketSession.get().getCurrentUser().getId());
 		AccountInfo accountInfo = new AccountInfo();
-		accountInfo.setAccountIdentifier(accountBean.getAppDirectUuid());
+		accountInfo.setAccountIdentifier(accountBean.getId().toString());
 		usageBean.setAccount(accountInfo);
 		UsageItemBean usageItemBean = new UsageItemBean();
 		usageBean.getItems().add(usageItemBean);
