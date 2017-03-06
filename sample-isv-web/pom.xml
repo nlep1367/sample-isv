@@ -9,6 +9,11 @@
 
 	<artifactId>sample-isv-web</artifactId>
 
+	<properties>
+		<!-- Dependency versions -->
+		<logstash-logback-encoder.version>4.6</logstash-logback-encoder.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -115,6 +120,11 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>${logstash-logback-encoder.version}</version>
+		</dependency>
 
 		<!-- Provided Dependencies. -->
 		<dependency>
@@ -133,9 +143,14 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<finalName>${artifactId}</finalName>
 		<resources>
 			<resource>
 				<filtering>true</filtering>
@@ -197,6 +212,72 @@
 				<groupId>pl.project13.maven</groupId>
 				<artifactId>git-commit-id-plugin</artifactId>
 			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.4.13</version>
+				<configuration>
+					<env>
+						<JAVA_OPTS>""</JAVA_OPTS>
+					</env>
+					<skipDocker>false</skipDocker>
+					<baseImage>openjdk:8u121-jdk</baseImage>
+					<imageName>docker.appdirectondemand.com/sample-isv/sample-isv</imageName>
+					<entryPoint>["java", "-server", "-Djava.security.egd=file:/dev/urandom", "-Xms384m", "-Xmx384m", "-XX:MaxMetaspaceSize=96m", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
+					<imageTags>
+						<imageTag>${project.version}</imageTag>
+					</imageTags>
+					<serverId>docker</serverId>
+					<dockerHost>unix:///var/run/docker.sock</dockerHost>
+					<registryUrl>https://docker.appdirectondemand.com/v2/</registryUrl>
+					<resources>
+						<resource>
+							<targetPath>/</targetPath>
+							<directory>${project.build.directory}</directory>
+							<include>${project.build.finalName}.jar</include>
+						</resource>
+					</resources>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>jenkins</id>
+
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>com.spotify</groupId>
+							<artifactId>docker-maven-plugin</artifactId>
+							<configuration>
+								<imageName>docker.appdirectondemand.com/sample-isv/sample-isv</imageName>
+								<registryUrl>https://docker.appdirectondemand.com/v2</registryUrl>
+								<serverId>docker</serverId>
+								<pushImage>true</pushImage>
+							</configuration>
+							<executions>
+								<execution>
+									<phase>install</phase>
+									<goals>
+										<goal>build</goal>
+										<goal>push</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
