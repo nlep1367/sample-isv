@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 @Getter @Setter @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @Entity
 @Table(name = "isv_accounts")
-public class Account {
+public class Account extends TimestampedObject {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")

@@ -3,31 +3,34 @@ package com.appdirect.isv.integration.wicket.pages.procurement;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.request.flow.RedirectToUrlException;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.wicketstuff.annotation.mount.MountPath;
 
 import com.appdirect.isv.dto.AccountBean;
 import com.appdirect.isv.dto.UserBean;
-import com.appdirect.isv.integration.remote.type.EventType;
+import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
+import com.appdirect.isv.integration.remote.type.ErrorCode;
 import com.appdirect.isv.integration.remote.vo.EventInfo;
 import com.appdirect.isv.integration.service.IntegrationService;
+import com.appdirect.isv.model.ApplicationProfile;
 import com.appdirect.isv.service.AccountService;
+import com.appdirect.isv.web.wicket.pages.BaseWebPage;
 
-@MountPath("/appdirect/create")
-public class CreateAccountPage extends BaseIntegrationPage {
+/**
+ * The Create Account Page cannot be access directly.
+ * The user must first go through the secure version of this page, which is the CreateAccountSecureRedirectPage, and
+ * then be redirected to this unsecured page to finish the interactive subscription creation flow.
+ */
+@MountPath("/unsecure/appdirect/create")
+public class CreateAccountPage extends BaseWebPage {
 	private static final long serialVersionUID = 7526823547605447478L;
 
 	@SpringBean
 	private AccountService accountService;
 
-	public CreateAccountPage(final PageParameters parameters) {
-		super(parameters);
+	public CreateAccountPage(EventInfo eventInfo, String basePath, ApplicationProfile applicationProfile, OAuthUrlSigner oauthUrlSigner) {
+		StringBuilder returnUrl = new StringBuilder(eventInfo.getReturnUrl());
 
-		EventInfo eventInfo = readEvent(parameters);
-		if (eventInfo == null || eventInfo.getType() != EventType.SUBSCRIPTION_ORDER) {
-			throw new IllegalStateException("Invalid event object.");
-		}
 		add(new Label("uuid", eventInfo.getCreator().getUuid()));
 		add(new Label("openId", eventInfo.getCreator().getOpenId()));
 		add(new Label("email", eventInfo.getCreator().getEmail()));
@@ -63,8 +66,23 @@ public class CreateAccountPage extends BaseIntegrationPage {
 				accountBean.setMaxUsers(eventInfo.getPayload().getOrder().getMaxUsers());
 
 				accountService.createAccount(accountBean, adminBean);
-				String successUrl = eventInfo.getReturnUrl() + "&success=true&accountIdentifier=" + accountBean.getAppDirectUuid();
+				String successUrl = returnUrl.append("&success=true&accountIdentifier=")
+						.append(accountBean.getId())
+						.toString();
 				String signedUrl = oauthUrlSigner.sign(successUrl);
+				throw new RedirectToUrlException(signedUrl);
+			}
+		});
+		add(new Link<Void>("failure") {
+			private static final long serialVersionUID = 3944839969882170140L;
+
+			@Override
+			public void onClick() {
+				String failureUrl = returnUrl.append("&success=false&errorCode=")
+						.append(ErrorCode.UNKNOWN_ERROR)
+						.append("&message=Simulating+a+subscription+creation+failure")
+						.toString();
+				String signedUrl = oauthUrlSigner.sign(failureUrl);
 				throw new RedirectToUrlException(signedUrl);
 			}
 		});

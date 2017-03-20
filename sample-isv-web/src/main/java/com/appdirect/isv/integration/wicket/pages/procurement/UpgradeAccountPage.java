@@ -3,7 +3,6 @@ package com.appdirect.isv.integration.wicket.pages.procurement;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.request.flow.RedirectToUrlException;
-import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.hibernate.ObjectNotFoundException;
 import org.wicketstuff.annotation.mount.MountPath;
@@ -11,26 +10,25 @@ import org.wicketstuff.annotation.mount.MountPath;
 import com.appdirect.isv.dto.AccountBean;
 import com.appdirect.isv.integration.oauth.OAuthUrlSigner;
 import com.appdirect.isv.integration.remote.type.ErrorCode;
-import com.appdirect.isv.integration.remote.type.EventType;
 import com.appdirect.isv.integration.remote.vo.EventInfo;
+import com.appdirect.isv.model.ApplicationProfile;
 import com.appdirect.isv.service.AccountService;
+import com.appdirect.isv.web.wicket.pages.BaseWebPage;
 
-@MountPath("/appdirect/upgrade")
-public class UpgradeAccountPage extends BaseIntegrationPage {
+/**
+ * The Upgrade Account Page cannot be access directly.
+ * The user must first go through the secure version of this page, which is the UpgradeAccountSecureRedirectPage, and
+ * then be redirected to this unsecured page to finish the interactive subscription upgrade flow.
+ */
+@MountPath("/unsecure/appdirect/upgrade")
+public class UpgradeAccountPage extends BaseWebPage {
 	private static final long serialVersionUID = 1193297070006588092L;
 
 	@SpringBean
 	private AccountService accountService;
-	@SpringBean
-	private OAuthUrlSigner oauthUrlSigner;
 
-	public UpgradeAccountPage(PageParameters parameters) {
-		super(parameters);
-
-		EventInfo eventInfo = readEvent(parameters);
-		if (eventInfo == null || eventInfo.getType() != EventType.SUBSCRIPTION_CHANGE) {
-			throw new IllegalStateException("Invalid event object.");
-		}
+	public UpgradeAccountPage(EventInfo eventInfo, ApplicationProfile applicationProfile, OAuthUrlSigner oauthUrlSigner) {
+		StringBuilder returnUrl = new StringBuilder(eventInfo.getReturnUrl());
 
 		add(new Label("accountIdentifier", eventInfo.getPayload().getAccount().getAccountIdentifier()));
 		add(new Label("openId", eventInfo.getCreator().getOpenId()));
@@ -44,11 +42,11 @@ public class UpgradeAccountPage extends BaseIntegrationPage {
 
 			@Override
 			public void onClick() {
-				AccountBean accountBean = new AccountBean(applicationProfile);
-				accountBean.setAppDirectUuid(eventInfo.getPayload().getAccount().getAccountIdentifier());
+				Long accountId = Long.valueOf(eventInfo.getPayload().getAccount().getAccountIdentifier());
+ 				AccountBean accountBean = new AccountBean(applicationProfile);
+ 				accountBean.setId(accountId);
 				accountBean.setEditionCode(eventInfo.getPayload().getOrder().getEditionCode());
 				accountBean.setMaxUsers(eventInfo.getPayload().getOrder().getMaxUsers());
-				StringBuffer returnUrl = new StringBuffer(eventInfo.getReturnUrl());;
 				try {
 					accountService.updateAccount(accountBean);
 					returnUrl.append("&success=true");
@@ -56,6 +54,20 @@ public class UpgradeAccountPage extends BaseIntegrationPage {
 					returnUrl.append("&success=false&errorCode=").append(ErrorCode.ACCOUNT_NOT_FOUND.toString());
 				}
 				String signedUrl = oauthUrlSigner.sign(returnUrl.toString());
+				throw new RedirectToUrlException(signedUrl);
+			}
+		});
+
+		add(new Link<Void>("failure") {
+			private static final long serialVersionUID = 3944839969882170140L;
+
+			@Override
+			public void onClick() {
+				String failureUrl = returnUrl.append("&success=false&errorCode=")
+						.append(ErrorCode.UNKNOWN_ERROR)
+						.append("&message=Simulating+a+subscription+upgrade+failure")
+						.toString();
+				String signedUrl = oauthUrlSigner.sign(failureUrl);
 				throw new RedirectToUrlException(signedUrl);
 			}
 		});

@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 @Entity
 @Table(name = "isv_addons")
-public class Addon {
+public class Addon extends TimestampedObject {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")

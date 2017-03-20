@@ -18,7 +18,7 @@ import org.hibernate.annotations.Type;
 @Getter @Setter @NoArgsConstructor
 @Entity
 @Table(name = "isv_application_profiles")
-public class ApplicationProfile implements Serializable {
+public class ApplicationProfile extends TimestampedObject implements Serializable {
 	private static final long serialVersionUID = 8749509893827875016L;
 
 	@Id

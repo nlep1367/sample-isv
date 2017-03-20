@@ -18,7 +18,7 @@ import org.hibernate.annotations.Type;
 @Getter @Setter @NoArgsConstructor
 @Entity
 @Table(name = "isv_users")
-public class User {
+public class User extends TimestampedObject {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
