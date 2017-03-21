@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+	<!-- Propagate Logback log levels into JUL to maintain SLF4JBridgeHandler performance -->
+	<contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+		<resetJUL>true</resetJUL>
+	</contextListener>
+
+	<!-- Local env -->
+	<springProfile name="local">
+		<property name="CONSOLE_LOG_PATTERN" value="%clr(%date{ISO8601}){faint} [ thread=%thread ][ level=%clr(%level) ][ logger=%clr(%logger{1}){cyan} ]: %message%n"/>
+
+		<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+		<root level="INFO">
+			<appender-ref ref="CONSOLE" />
+		</root>
+	</springProfile>
+
+	<!-- Non Local env (Kubernetes Dev) -->
+	<springProfile name="!local">
+		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+			<encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+		</appender>
+
+		<root level="INFO">
+			<appender-ref ref="STDOUT" />
+		</root>
+	</springProfile>
+</configuration>

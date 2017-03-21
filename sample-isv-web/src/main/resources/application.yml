@@ -1,3 +1,8 @@
+server:
+  use-forward-headers: true
+  tomcat:
+    remote_ip_header: x-forwarded-for
+
 spring:
   datasource:
     test-on-borrow: true
@@ -5,6 +10,10 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     generate-ddl: true
+
+###############################
+# Spring-Boot Actuators Endpoints
+###############################
 endpoints:
   enabled: false
   health:
@@ -13,3 +22,9 @@ endpoints:
   info:
     enabled: true
     sensitive: false
+
+info:
+ build:
+  name: @project.name@
+  description: @project.description@
+  version: @project.version@
