@@ -31,6 +31,6 @@ info:
 
 saml:
   sso:
-    default-failure-url: /error
     metadata-generator:
       entity-base-url: https://dev-sample-isv.devappdirect.me/
+      entity-id: https://dev-sample-isv.devappdirect.me/saml/metadata
