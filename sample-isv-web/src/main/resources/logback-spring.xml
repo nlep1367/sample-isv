@@ -23,6 +23,9 @@
 		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 			<encoder class="net.logstash.logback.encoder.LogstashEncoder" />
 		</appender>
+		
+		<logger name="org.opensaml" level="TRACE"/>
+		<logger name="org.springframework.security.saml" level="TRACE"/>
 
 		<root level="INFO">
 			<appender-ref ref="STDOUT" />
