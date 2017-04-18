@@ -32,5 +32,5 @@ info:
 saml:
   sso:
     metadata-generator:
-      entity-base-url: https://dev-sample-isv.devappdirect.me/
-      entity-id: https://dev-sample-isv.devappdirect.me/saml/metadata
+      entity-base-url: http://dev-sample-isv.devappdirect.me/
+      entity-id: http://dev-sample-isv.devappdirect.me/saml/metadata
