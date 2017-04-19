@@ -29,9 +29,3 @@ info:
   name: @project.name@
   description: @project.description@
   version: @project.version@
-
-saml:
-  sso:
-    metadata-generator:
-      entity-base-url: https://dev-sample-isv.devappdirect.me/
-      entity-id: https://sample-isv.appdirect.com
