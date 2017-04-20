@@ -1,9 +1,16 @@
 package com.appdirect.isv.config.security;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Timer;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -74,7 +81,22 @@ public class SAMLConfiguration {
 
 	@Bean
 	public MetadataGeneratorFilter samlMetadataGeneratorFilter() {
-		return new MetadataGeneratorFilter(samlMetadataGenerator());
+		return new MetadataGeneratorFilter(samlMetadataGenerator()) {
+			@Override
+			public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+				log.info("X-Forwarded-For : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-For"));
+				log.info("X-Forwarded-Proto : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Proto"));
+				log.info("X-Forwarded-Port : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Port"));
+				super.doFilter(request,response,chain);
+				log.info("X-Forwarded-For: {}", ((HttpServletRequest)request).getHeader("X-Forwarded-For"));
+				log.info("X-Forwarded-Proto : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Proto"));
+				log.info("X-Forwarded-Port : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Port"));
+
+				log.info("Server Port : {}", Integer.toString(request.getServerPort()));
+				log.info("Server Name : {}", request.getServerName());
+				log.info("Request Scheme : {}", request.getScheme());
+			}
+		};
 	}
 
 	@Bean
