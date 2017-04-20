@@ -1,16 +1,9 @@
 package com.appdirect.isv.config.security;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Timer;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
@@ -18,6 +11,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.util.resource.ResourceException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.saml.SAMLBootstrap;
@@ -59,6 +53,9 @@ import com.appdirect.isv.security.saml.SamlUserDetailsServiceImpl;
 public class SAMLConfiguration {
 	private static final String SAML_SP_ENTITY_ID = "https://sample-isv.appdirect.com";
 
+	@Value("${sample-isv.metadata-generator.entity-base-url:#{NULL}}")
+	private String entityBaseUrl;
+
 	@Bean
 	public AuthenticationSuccessHandler samlAuthenticationSuccessHandler() {
 		SAMLRelayStateSuccessHandler successRedirectHandler = new SAMLRelayStateSuccessHandler();
@@ -81,26 +78,7 @@ public class SAMLConfiguration {
 
 	@Bean
 	public MetadataGeneratorFilter samlMetadataGeneratorFilter() {
-		return new MetadataGeneratorFilter(samlMetadataGenerator()) {
-			@Override
-			public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-				log.info("Avant X-Forwarded-For: {}", ((HttpServletRequest)request).getHeader("X-Forwarded-For"));
-				log.info("Avant X-Forwarded-Proto : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Proto"));
-				log.info("Avant X-Forwarded-Port : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Port"));
-
-				log.info("Avant Server Port : {}", Integer.toString(request.getServerPort()));
-				log.info("Avant Server Name : {}", request.getServerName());
-				log.info("Avant Request Scheme : {}", request.getScheme());
-				super.doFilter(request,response,chain);
-				log.info("X-Forwarded-For: {}", ((HttpServletRequest)request).getHeader("X-Forwarded-For"));
-				log.info("X-Forwarded-Proto : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Proto"));
-				log.info("X-Forwarded-Port : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Port"));
-
-				log.info("Server Port : {}", Integer.toString(request.getServerPort()));
-				log.info("Server Name : {}", request.getServerName());
-				log.info("Request Scheme : {}", request.getScheme());
-			}
-		};
+		return new MetadataGeneratorFilter(samlMetadataGenerator());
 	}
 
 	@Bean
@@ -226,6 +204,7 @@ public class SAMLConfiguration {
 	public MetadataGenerator samlMetadataGenerator() {
 		MetadataGenerator metadataGenerator = new MetadataGenerator();
 		metadataGenerator.setEntityId(SAML_SP_ENTITY_ID);
+		metadataGenerator.setEntityBaseURL(entityBaseUrl);
 		metadataGenerator.setExtendedMetadata(samlSpExtendedMetadata());
 		metadataGenerator.setIncludeDiscoveryExtension(false);
 		metadataGenerator.setRequestSigned(false);
