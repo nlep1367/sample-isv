@@ -225,7 +225,7 @@ public class SAMLConfiguration {
 	@Bean
 	public MetadataGenerator samlMetadataGenerator() {
 		MetadataGenerator metadataGenerator = new MetadataGenerator();
-		metadataGenerator.setEntityBaseURL("https://dev-sample-isv.devappdirect.me");
+		metadataGenerator.setEntityId(SAML_SP_ENTITY_ID);
 		metadataGenerator.setExtendedMetadata(samlSpExtendedMetadata());
 		metadataGenerator.setIncludeDiscoveryExtension(false);
 		metadataGenerator.setRequestSigned(false);
