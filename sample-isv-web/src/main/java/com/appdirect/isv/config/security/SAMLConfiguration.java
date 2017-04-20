@@ -84,9 +84,13 @@ public class SAMLConfiguration {
 		return new MetadataGeneratorFilter(samlMetadataGenerator()) {
 			@Override
 			public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-				log.info("X-Forwarded-For : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-For"));
-				log.info("X-Forwarded-Proto : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Proto"));
-				log.info("X-Forwarded-Port : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Port"));
+				log.info("Avant X-Forwarded-For: {}", ((HttpServletRequest)request).getHeader("X-Forwarded-For"));
+				log.info("Avant X-Forwarded-Proto : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Proto"));
+				log.info("Avant X-Forwarded-Port : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Port"));
+
+				log.info("Avant Server Port : {}", Integer.toString(request.getServerPort()));
+				log.info("Avant Server Name : {}", request.getServerName());
+				log.info("Avant Request Scheme : {}", request.getScheme());
 				super.doFilter(request,response,chain);
 				log.info("X-Forwarded-For: {}", ((HttpServletRequest)request).getHeader("X-Forwarded-For"));
 				log.info("X-Forwarded-Proto : {}", ((HttpServletRequest)request).getHeader("X-Forwarded-Proto"));
