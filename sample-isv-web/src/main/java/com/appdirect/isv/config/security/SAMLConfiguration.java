@@ -11,6 +11,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.util.resource.ResourceException;
 import org.opensaml.xml.parse.StaticBasicParserPool;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.saml.SAMLBootstrap;
@@ -51,6 +52,9 @@ import com.appdirect.isv.security.saml.SamlUserDetailsServiceImpl;
 @Configuration
 public class SAMLConfiguration {
 	private static final String SAML_SP_ENTITY_ID = "https://sample-isv.appdirect.com";
+
+	@Value("${sample-isv.metadata-generator.entity-base-url:#{NULL}}")
+	private String entityBaseUrl;
 
 	@Bean
 	public AuthenticationSuccessHandler samlAuthenticationSuccessHandler() {
@@ -200,6 +204,7 @@ public class SAMLConfiguration {
 	public MetadataGenerator samlMetadataGenerator() {
 		MetadataGenerator metadataGenerator = new MetadataGenerator();
 		metadataGenerator.setEntityId(SAML_SP_ENTITY_ID);
+		metadataGenerator.setEntityBaseURL(entityBaseUrl);
 		metadataGenerator.setExtendedMetadata(samlSpExtendedMetadata());
 		metadataGenerator.setIncludeDiscoveryExtension(false);
 		metadataGenerator.setRequestSigned(false);
