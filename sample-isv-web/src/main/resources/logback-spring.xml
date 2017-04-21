@@ -24,8 +24,9 @@
 			<encoder class="net.logstash.logback.encoder.LogstashEncoder" />
 		</appender>
 
-		<logger name="org.opensaml" level="TRACE"/>
-		<logger name="org.springframework.security.saml" level="TRACE"/>
+		<logger name="org.opensaml" level="DEBUG"/>
+		<logger name="org.springframework.security.saml" level="DEBUG"/>
+		<logger name="org.apache.commons.httpclient.auth" level="DEBUG"/>
 
 		<root level="INFO">
 			<appender-ref ref="STDOUT" />
